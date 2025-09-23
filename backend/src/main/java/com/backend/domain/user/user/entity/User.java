@@ -11,24 +11,24 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long user_id;
     @Column(unique = true, nullable = false, length = 100)
     private String email;
     @Column(length = 20, nullable = false)
     private String password;
     @Column(length = 15, nullable = false)
-    private String phoneNumber;
-    private LocalDateTime createDate;
-    private LocalDateTime modifyDate;
+    private String phone_number;
+    private LocalDateTime create_date;
+    private LocalDateTime modify_date;
     private int level;
 
     public User(Long id, String email, String password, String phoneNumber, int level) {
-        this.id = id;
+        this.user_id = id;
         this.email = email;
         this.password = password;
-        this.phoneNumber = phoneNumber;
+        this.phone_number = phoneNumber;
         this.level = level;
-        this.createDate = LocalDateTime.now();
-        this.modifyDate = LocalDateTime.now();
+        this.create_date = LocalDateTime.now();
+        this.modify_date = LocalDateTime.now();
     }
 }
