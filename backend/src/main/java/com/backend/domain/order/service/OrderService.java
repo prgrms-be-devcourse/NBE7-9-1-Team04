@@ -1,6 +1,7 @@
 package com.backend.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service

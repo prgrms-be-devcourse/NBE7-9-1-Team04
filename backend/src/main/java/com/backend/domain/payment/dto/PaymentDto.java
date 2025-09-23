@@ -1,4 +1,8 @@
 package com.backend.domain.payment.dto;
 
-public class PaymentDto {
-}
+record PaymentDto(
+        Long paymentId,
+        int orderAmount,
+        String orderPaymentType,
+        String orderStatus
+) {}
