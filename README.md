@@ -1,6 +1,8 @@
 # NBE7-9-1-Team04
 데브코스 백엔드 7기 9회차 4팀 A3O2 1차 프로젝트
 
+[자세한 정보를 원한다면 위키로](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki)
+
 # 요구사항
 이 프로젝트를 실행하기 위해서는 아래와 같은 사항들이 필요합니다.
 
