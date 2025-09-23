@@ -1,4 +1,14 @@
 package com.backend.domain.user.user.dto;
 
-public class UserDto {
+import java.time.LocalDateTime;
+
+record UserDto (
+        Long userId,
+        String userEmail,
+        String password,
+        String phoneNumber,
+        LocalDateTime createDate,
+        LocalDateTime modifyDate,
+        int level
+){
 }
