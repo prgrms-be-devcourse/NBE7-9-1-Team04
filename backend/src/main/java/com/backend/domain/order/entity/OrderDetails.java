@@ -28,7 +28,6 @@ public class OrderDetails {
     private Orders order;
 
     @ManyToOne
-    @JoinColumn(name = "menu_menu_id")
     private Menu menu;
 
     @Column(nullable = false)

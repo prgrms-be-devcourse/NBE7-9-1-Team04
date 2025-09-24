@@ -3,6 +3,8 @@ package com.backend.domain.order.service;
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.domain.order.controller.OrderController;
+import com.backend.domain.order.dto.request.OrderCreateRequest;
+import com.backend.domain.order.dto.request.OrderDetailsCreateRequest;
 import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
@@ -28,7 +30,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
 
     @Transactional
-    public Orders createOrder(OrderController.OrderCreateRequest request) {
+    public Orders createOrder(@Valid OrderCreateRequest request) {
         // 1. 유저 확인
         Users user = (Users) usersRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
@@ -37,7 +39,8 @@ public class OrderService {
         List<OrderDetails> orderDetails = new ArrayList<>();
         int calculatedTotal = 0;
 
-        for (OrderController.OrderItemRequest itemReq : request.items()) {
+        assert request.items() != null;
+        for (OrderDetailsCreateRequest itemReq : request.items()) {
             Menu menu = menuRepository.findById(itemReq.productId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
@@ -67,6 +70,7 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
 
     @Transactional
     public void updateOrderStatus(Long orderId, String status) {

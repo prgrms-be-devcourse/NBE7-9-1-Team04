@@ -1,6 +1,7 @@
 package com.backend.domain.order.controller;
 
-import com.backend.domain.order.dto.OrderDto;
+import com.backend.domain.order.dto.request.OrderCreateRequest;
+import com.backend.domain.order.dto.response.OrderCreateResponse;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
 import com.backend.global.response.ApiResponse;
@@ -26,32 +27,15 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    // 주문 상세 요청 DTO
-    public record OrderItemRequest(
-            @NotNull Long productId,
-            @NotBlank String menuName,
-            @Min(0) int quantity,
-            @Min(0) int orderPrice
-    ) {
-    }
-
-    // 주문 생성 요청 DTO
-    public record OrderCreateRequest(
-            @Email String email,
-            @Min(0) int amount,
-            @NotEmpty List<OrderItemRequest> items
-    ) {
-    }
-
 
     @PostMapping
     @Transactional
     @Operation(summary = "주문 생성")
-    public ResponseEntity<ApiResponse<OrderDto>> createOrder(
+    public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(
             @Valid @RequestBody OrderCreateRequest request
     ) {
         Orders order = orderService.createOrder(request);
-        return ResponseEntity.ok(ApiResponse.success(new OrderDto(order)));
+        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(order)));
     }
 
     public record OrderStatusUpdateReqBody(
@@ -63,7 +47,7 @@ public class OrderController {
     @PutMapping("/{orderId}/status")
     @Transactional
     @Operation(summary = "주문 상태 업데이트")
-    public ResponseEntity<ApiResponse<OrderDto>> updateOrderStatus(
+    public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody @Valid OrderStatusUpdateReqBody reqBody
 
@@ -73,7 +57,7 @@ public class OrderController {
 
         // 업데이트된 주문 정보 반환
         Optional<Orders> updatedOrder = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(ApiResponse.success(new OrderDto(updatedOrder)));
+        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
     }
 
     public record OrderSummaryResponse(
@@ -83,8 +67,6 @@ public class OrderController {
             LocalDateTime orderTime
     ) {
     }
-
-
 
     @GetMapping
     @Operation(summary = "사용자 주문 목록 조회")

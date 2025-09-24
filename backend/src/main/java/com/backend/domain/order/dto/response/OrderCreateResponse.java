@@ -1,4 +1,4 @@
-package com.backend.domain.order.dto;
+package com.backend.domain.order.dto.response;
 
 import com.backend.domain.order.entity.Orders;
 
@@ -11,16 +11,16 @@ import java.util.stream.Collectors;
  * 주문 정보를 클라이언트에 전달하기 위한 DTO
  * record를 사용하여 불변 객체로 간단하게 정의합니다.
  */
-public record OrderDto(
+public record OrderCreateResponse(
         Long orderId,
         Long userId,
         String status,
         int orderAmount,
         LocalDateTime orderTime,
-        List<OrderDetailsDto> details
+        List<OrderDetailsCreateResponse> details
 ) {
     // Entity를 DTO로 변환하는 생성자
-    public OrderDto(Orders order) {
+    public OrderCreateResponse(Orders order) {
         this(
                 order.getOrderId(),
                 order.getUser().getUserId(),
@@ -28,12 +28,12 @@ public record OrderDto(
                 order.getOrderAmount(),
                 order.getCreateDate(),
                 order.getOrderDetails().stream()
-                        .map(OrderDetailsDto::new)
+                        .map(OrderDetailsCreateResponse::new)
                         .collect(Collectors.toList())
         );
     }
 
-    public OrderDto(Optional<Orders> updatedOrder) {
+    public OrderCreateResponse(Optional<Orders> updatedOrder) {
         this(updatedOrder.orElseThrow(() -> new IllegalArgumentException("Order not found")));
     }
 }
