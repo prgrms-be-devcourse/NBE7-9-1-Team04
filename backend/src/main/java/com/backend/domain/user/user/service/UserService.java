@@ -1,6 +1,6 @@
 package com.backend.domain.user.user.service;
 
-import com.backend.domain.user.user.entity.User;
+import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,14 +11,15 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User createUser(String email, String password,String phoneNumber) throws Exception {
+    public Users createUser(String email, String password, String phoneNumber) throws Exception {
         String[] phoneBits = phoneNumber.split("-");
-        if(phoneBits.length != 3){
-            throw new Exception("이후 예외부분 추가");
+        if(phoneBits.length != 3) {
+            throw new Exception("Invalid phone number");
         }
 
-        User newUser = new User(email,password,phoneNumber,1);
-        return userRepository.save(newUser);
+
+        Users newUsers = new Users(email,password,phoneNumber,1);
+        return userRepository.save(newUsers);
     }
 
 }
