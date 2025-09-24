@@ -1,6 +1,6 @@
 package com.backend.domain.order.dto;
 
-import com.backend.domain.order.entity.Order;
+import com.backend.domain.order.entity.Orders;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ public record OrderDto(
         List<OrderDetailsDto> details
 ) {
     // Entity를 DTO로 변환하는 생성자
-    public OrderDto(Order order) {
+    public OrderDto(Orders order) {
         this(
                 order.getOrderId(),
 //                order.getUser_id().getUserId(), // User 엔티티에 getUserId()가 있다고 가정
