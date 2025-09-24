@@ -1,11 +1,10 @@
 package com.backend.domain.user.user.dto;
 
-import com.backend.domain.user.user.entity.User;
-
+import com.backend.domain.user.user.entity.Users;
 import java.time.LocalDateTime;
 
 
-record UserDto (
+public record UserDto (
         Long userId,
         String userEmail,
         String password,
@@ -15,15 +14,15 @@ record UserDto (
         int level
 ) {
 
-    public UserDto(User user){
+    public UserDto(Users users){
         this(
-                user.getUserId(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getPhoneNumber(),
-                null, // base Entity 도입시 해당 부분으로 객체 적용.
-                null,
-                user.getLevel()
+                users.getUserId(),
+                users.getEmail(),
+                users.getPassword(),
+                users.getPhoneNumber(),
+                users.getCreateDate(), // base Entity 도입시 해당 부분으로 객체 적용.
+                users.getModifyDate(),
+                users.getLevel()
         );
     }
 }
