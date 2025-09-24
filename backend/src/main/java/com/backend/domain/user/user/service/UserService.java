@@ -12,11 +12,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     public Users createUser(String email, String password, String phoneNumber) throws Exception {
-        String[] phoneBits = phoneNumber.split("-");
-        if(phoneBits.length != 3) {
-            throw new Exception("Invalid phone number");
-        }
-
 
         Users newUsers = new Users(email,password,phoneNumber,1);
         return userRepository.save(newUsers);
