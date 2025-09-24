@@ -28,4 +28,8 @@ public class Users extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.level = level;
     }
+
+    public boolean isMatchedPassword(String password) {
+        return this.password.equals(password);
+    }
 }

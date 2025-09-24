@@ -1,11 +1,10 @@
 package com.backend.domain.user.user.dto;
 
 import com.backend.domain.user.user.entity.Users;
-
 import java.time.LocalDateTime;
 
 
-record UserDto (
+public record UserDto (
         Long userId,
         String userEmail,
         String password,
