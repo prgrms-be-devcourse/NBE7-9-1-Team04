@@ -1,6 +1,6 @@
-package com.mozi.global.exception;
+package com.backend.global.exception;
 
-import com.mozi.global.response.ErrorCode;
+import com.backend.global.response.ErrorCode;
 import lombok.Getter;
 
 @Getter

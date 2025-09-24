@@ -1,13 +1,15 @@
-package com.mozi.global.exception;
+package com.backend.global.exception;
 
-import com.mozi.global.response.ApiResponse;
-import com.mozi.global.response.ErrorCode;
-import com.mozi.global.response.ResponseCode;
+import com.backend.global.response.ApiResponse;
+import com.backend.global.response.ErrorCode;
+import com.backend.global.response.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -15,10 +17,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        // 모든 에러 메시지를 ", "로 연결하여 하나의 문자열로 만듭니다.
         String errorMessage = ex.getBindingResult()
                 .getAllErrors()
-                .get(0)
-                .getDefaultMessage();
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
 
         log.warn("Validation failed: {}", errorMessage);
 
