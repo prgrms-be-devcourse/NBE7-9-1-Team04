@@ -6,7 +6,7 @@ import com.backend.domain.cart.entity.Cart;
 import com.backend.domain.cart.repository.CartRepository;
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
-import com.backend.domain.user.user.entity.User;
+import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
@@ -27,7 +27,7 @@ public class CartService {
     @Transactional
     public CartResponse addCartItem(CartAddRequest request) {
 
-        User testUser = userRepository.findById(TEST_USER_ID)
+        Users testUser = userRepository.findById(TEST_USER_ID)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
         Menu menu = menuRepository.findById(request.getMenuId())

@@ -1,7 +1,8 @@
 package com.backend.domain.cart.entity;
 
 import com.backend.domain.menu.entity.Menu;
-import com.backend.domain.user.user.entity.User;
+import com.backend.domain.user.user.entity.Users;
+import com.backend.domain.user.user.entity.Users;
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,7 +22,7 @@ public class Cart extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menuId", nullable = false)
@@ -34,7 +35,7 @@ public class Cart extends BaseEntity {
     private Integer orderAmount;
 
     @Builder
-    public Cart(User user, Menu menu, Integer quantity) {
+    public Cart(Users user, Menu menu, Integer quantity) {
         this.user = user;
         this.menu = menu;
         this.quantity = quantity;
