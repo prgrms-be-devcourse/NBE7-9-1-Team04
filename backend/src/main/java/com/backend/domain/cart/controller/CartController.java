@@ -37,7 +37,8 @@ public class CartController implements CartSpecification {
 
     @DeleteMapping("/items/{menuId}")
     public ResponseEntity<ApiResponse<Void>> deleteCartItem(@PathVariable Long menuId) {
-        // TODO: 장바구니 특정 항목 삭제 로직 구현
+        // TODO: 현재 로그인한 사용자의 ID를 가져오는 로직 추가 예정
+        cartService.deleteCartItem(menuId);
         return ResponseEntity.ok(ApiResponse.success());
     }
 

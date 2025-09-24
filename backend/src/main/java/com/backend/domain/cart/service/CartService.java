@@ -66,4 +66,18 @@ public class CartService {
         return CartResponse.from(cartItem);
 
     }
+
+    @Transactional
+    public void deleteCartItem(Long menuId) {
+        Users testUser = userRepository.findById(TEST_USER_ID)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        Cart cartItem = cartRepository.findByUserAndMenu(testUser, menu)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        cartRepository.delete(cartItem);
+    }
 }
