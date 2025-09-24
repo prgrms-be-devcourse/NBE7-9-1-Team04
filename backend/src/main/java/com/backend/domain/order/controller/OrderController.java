@@ -1,6 +1,7 @@
 package com.backend.domain.order.controller;
 
 import com.backend.domain.order.dto.request.OrderCreateRequest;
+import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
 import com.backend.domain.order.dto.response.OrderCreateResponse;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
@@ -38,18 +39,12 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
     }
 
-    public record OrderStatusUpdateReqBody(
-            @NotNull
-            String newStatus
-    ) {
-    }
-
     @PutMapping("/{orderId}/status")
     @Transactional
     @Operation(summary = "주문 상태 업데이트")
     public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody @Valid OrderStatusUpdateReqBody reqBody
+            @RequestBody @Valid OrderStatusUpdateRequest reqBody
 
     ) {
         // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)

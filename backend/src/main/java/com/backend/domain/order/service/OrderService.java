@@ -67,7 +67,7 @@ public class OrderService {
         }
 
         // 4. 주문 엔티티 생성
-        Orders order = new Orders(user, calculatedTotal, OrderStatus.PAID);
+        Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED);
         order.addOrderDetails(orderDetails);
 
         return orderRepository.save(order);
