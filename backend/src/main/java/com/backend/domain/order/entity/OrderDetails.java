@@ -17,7 +17,7 @@ public class OrderDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long order_item_id;
+    private Long orderItemId;
 
     // Order 엔티티와의 관계 (다대일)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,8 +31,8 @@ public class OrderDetails {
     private int quantity;
 
     @Column(nullable = false)
-    private int order_price;
+    private int orderPrice;
 
     @Column(length = 100, nullable = false)
-    private String menu_name;
+    private String menuName;
 }

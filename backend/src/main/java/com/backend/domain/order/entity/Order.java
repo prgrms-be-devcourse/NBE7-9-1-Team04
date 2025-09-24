@@ -21,21 +21,21 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long order_id;
+    private Long orderId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus order_status;
+    private OrderStatus orderStatus;
 
     @Column(nullable = false)
-    private int order_amount;
+    private int orderAmount;
 
     @Column(nullable = false)
-    private LocalDateTime order_time;
+    private LocalDateTime orderTime;
 
     // OrderDetails 엔티티와의 관계 (일대다)
     @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<OrderDetails> order_details = new ArrayList<>();
+    private List<OrderDetails> orderDetails = new ArrayList<>();
 
 //    // User 엔티티와의 관계 (다대일)
 //    @ManyToOne(fetch = FetchType.LAZY)

@@ -15,11 +15,11 @@ public record OrderDetailsDto(
     // Entity를 DTO로 변환하는 생성자
     public OrderDetailsDto(OrderDetails details) {
         this(
-                details.getOrder_item_id(),
+                details.getOrderItemId(),
                 // details.getMenu().getMenuId(), // Menu 엔티티에 getMenuId()가 있다고 가정
 //                details.getMenuName(),
                 details.getQuantity(),
-                details.getOrder_price()
+                details.getOrderPrice()
         );
     }
 }

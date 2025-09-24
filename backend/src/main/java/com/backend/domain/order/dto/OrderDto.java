@@ -21,12 +21,12 @@ public record OrderDto(
     // Entity를 DTO로 변환하는 생성자
     public OrderDto(Order order) {
         this(
-                order.getOrder_id(),
+                order.getOrderId(),
 //                order.getUser_id().getUserId(), // User 엔티티에 getUserId()가 있다고 가정
-                order.getOrder_status().name(),
-                order.getOrder_amount(),
-                order.getOrder_time(),
-                order.getOrder_details().stream()
+                order.getOrderStatus().name(),
+                order.getOrderAmount(),
+                order.getOrderTime(),
+                order.getOrderDetails().stream()
                         .map(OrderDetailsDto::new)
                         .collect(Collectors.toList())
         );
