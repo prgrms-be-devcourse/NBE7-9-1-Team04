@@ -1,13 +1,25 @@
 package com.backend.domain.user.address.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.backend.domain.user.user.entity.Users;
+import com.backend.global.jpa.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
-public class Address {
+@Getter
+public class Address extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer addressId;
+    private Long addressId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
+
+    private String address;
+
+    private String addressDetail;
+
+    private String postNumber;
+
 }
