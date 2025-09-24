@@ -17,7 +17,7 @@ public class CartResponse {
     @Schema(description = "메뉴 이름", example = "원두")
     private String name;
 
-    @Schema(description = "메뉴 이미지 URL", example = "http://example.com/images/chicken.jpg")
+    @Schema(description = "메뉴 이미지 URL", example = "http://example.com/images/coffee.jpg")
     private String imageUrl;
 
     @Schema(description = "메뉴 개당 가격", example = "18000")
