@@ -1,11 +1,14 @@
 package com.backend.domain.order.dto.response;
 
 import com.backend.domain.order.entity.Orders;
+import com.backend.global.exception.BusinessException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.backend.global.response.ErrorCode.NOT_FOUND_ORDER;
 
 /**
  * 주문 정보를 클라이언트에 전달하기 위한 DTO
@@ -34,6 +37,6 @@ public record OrderCreateResponse(
     }
 
     public OrderCreateResponse(Optional<Orders> updatedOrder) {
-        this(updatedOrder.orElseThrow(() -> new IllegalArgumentException("Order not found")));
+        this(updatedOrder.orElseThrow(() -> new BusinessException(NOT_FOUND_ORDER)));
     }
 }

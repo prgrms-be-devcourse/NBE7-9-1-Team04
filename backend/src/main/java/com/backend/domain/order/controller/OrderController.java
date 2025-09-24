@@ -35,7 +35,7 @@ public class OrderController {
             @Valid @RequestBody OrderCreateRequest request
     ) {
         Orders order = orderService.createOrder(request);
-        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(order)));
+        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
     }
 
     public record OrderStatusUpdateReqBody(

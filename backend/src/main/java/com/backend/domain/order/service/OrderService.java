@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +67,7 @@ public class OrderService {
         }
 
         // 4. 주문 엔티티 생성
-        Orders order = new Orders(user, calculatedTotal, OrderStatus.PAYMENT_PENDING);
+        Orders order = new Orders(user, calculatedTotal, OrderStatus.PAID);
         order.addOrderDetails(orderDetails);
 
         return orderRepository.save(order);
@@ -74,17 +76,40 @@ public class OrderService {
 
     @Transactional
     public void updateOrderStatus(Long orderId, String status) {
-        Optional<Orders> order = orderRepository.findById(orderId);
-        // String → Enum 변환
-        OrderStatus newStatus = OrderStatus.valueOf(status.toUpperCase());
+        // 1. 주문 존재 확인
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
-        // 상태 업데이트
-        order.get().setOrderStatus(newStatus);
+        // 2. Enum 변환 검증
+        OrderStatus newStatus;
+        try {
+            newStatus = OrderStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        // 3. 상태 전이 검증
+        if (!order.getOrderStatus().canTransitionTo(newStatus)) {
+            throw new BusinessException(ErrorCode.INVALID_STATUS_TRANSITION);
+        }
+
+        // 4. 시간 검증
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
+        LocalDateTime yesterday2pm = today.minusDays(1).atTime(14, 0);
+        LocalDateTime today2pm = today.atTime(14, 0);
+
+        LocalDateTime createdAt = order.getCreateDate();
+        if (createdAt.isBefore(yesterday2pm) || createdAt.isAfter(today2pm)) {
+            throw new BusinessException(ErrorCode.INVALID_ORDER_PROCESSING_TIME);
+        }
+
+        // 5. 상태 업데이트
+        order.setOrderStatus(newStatus);
     }
 
     public Optional<Orders> getOrderById(Long orderId) {
         return orderRepository.findById(orderId);
-//                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
     }
 
     public List<Orders> getOrdersByUserId(Long userId) {

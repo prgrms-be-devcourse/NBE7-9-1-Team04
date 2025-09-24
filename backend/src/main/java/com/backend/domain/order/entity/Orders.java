@@ -48,7 +48,7 @@ public class Orders extends BaseEntity {
 
     //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
     @OneToOne(fetch = FetchType.LAZY)
-    private Payment payment;
+    private Payment paymentId;
 
     public void addOrderDetails(List<OrderDetails> orderDetails) {
         for (OrderDetails detail : orderDetails) {

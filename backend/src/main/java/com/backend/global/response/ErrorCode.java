@@ -30,7 +30,16 @@ public enum ErrorCode {
     // 주문 가격이 예상 가격과 일치하지 않을 때 발생시킵니다.
     INVALID_ORDER_PRICE("O002", HttpStatus.BAD_REQUEST, "주문 가격이 올바르지 않습니다."),
     // 주문 총액이 예상 총액과 일치하지 않을 때 발생시킵니다.
-    INVALID_ORDER_AMOUNT("O003", HttpStatus.BAD_REQUEST, "주문 총액이 올바르지 않습니다."),;
+    INVALID_ORDER_AMOUNT("O003", HttpStatus.BAD_REQUEST, "주문 총액이 올바르지 않습니다."),
+    // 주문 ID가 DB에 존재하지 않을 때 사용합니다.
+    NOT_FOUND_ORDER("O004", HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
+    // 주문 상태 변경이 불가능한 경우 발생시킵니다.
+    INVALID_ORDER_STATUS("O005", HttpStatus.BAD_REQUEST, "알맞는 상태를 입력해주세요."),
+    // 주문 상태 변경이 논리적으로 불가능한 경우 발생시킵니다.
+    INVALID_STATUS_TRANSITION("O006", HttpStatus.BAD_REQUEST, "주문 상태 변경이 논리적으로 불가능합니다."),
+    // 조회 기간이 31일을 초과할 때 발생시킵니다.
+    INVALID_ORDER_PROCESSING_TIME("O007", HttpStatus.BAD_REQUEST, "주문 상태는 매일 오후 2시에 일괄 처리됩니다.");
+
 
     private final String code;
     private final HttpStatus status;
