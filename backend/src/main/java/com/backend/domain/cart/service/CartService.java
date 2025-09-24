@@ -1,6 +1,7 @@
 package com.backend.domain.cart.service;
 
 import com.backend.domain.cart.controller.dto.request.CartAddRequest;
+import com.backend.domain.cart.controller.dto.request.CartUpdateRequest;
 import com.backend.domain.cart.controller.dto.response.CartResponse;
 import com.backend.domain.cart.entity.Cart;
 import com.backend.domain.cart.repository.CartRepository;
@@ -43,5 +44,26 @@ public class CartService {
             cartRepository.save(cartItem);
         }
         return CartResponse.from(cartItem);
+    }
+
+    @Transactional
+    public CartResponse updateCartItemQuantity(Long menuId, CartUpdateRequest request) {
+        Users testUser = userRepository.findById(TEST_USER_ID)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        if (request.getQuantity() <= 0) {
+            throw new BusinessException(ErrorCode.INVALID_QUANTITY);
+        }
+
+        Cart cartItem = cartRepository.findByUserAndMenu(testUser, menu)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        cartItem.updateQuantity(request.getQuantity());
+
+        return CartResponse.from(cartItem);
+
     }
 }

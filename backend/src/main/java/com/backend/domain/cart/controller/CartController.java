@@ -30,8 +30,8 @@ public class CartController implements CartSpecification {
     public ResponseEntity<ApiResponse<CartResponse>> updateCartItemQuantity(
             @PathVariable Long menuId,
             @RequestBody CartUpdateRequest request) {
-        // TODO: 장바구니 수량 변경 로직 구현
-        CartResponse response = CartResponse.builder().build();
+        // TODO: 현재 로그인한 사용자의 ID를 가져오는 로직 추가 예정
+        CartResponse response = cartService.updateCartItemQuantity(menuId, request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
