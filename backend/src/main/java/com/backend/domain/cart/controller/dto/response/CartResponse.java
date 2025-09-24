@@ -1,5 +1,6 @@
 package com.backend.domain.cart.controller.dto.response;
 
+import com.backend.domain.cart.entity.Cart;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,5 +39,16 @@ public class CartResponse {
         this.price = price;
         this.quantity = quantity;
         this.orderAmount = price * quantity; // 항목별 총액 계산
+    }
+
+    public static CartResponse from(Cart cart) {
+        return CartResponse.builder()
+                .cartId(cart.getId())
+                .menuId(cart.getMenu().getMenuId())
+                .name(cart.getMenu().getName())
+                .imageUrl(cart.getMenu().getImageUrl())
+                .price(cart.getMenu().getPrice())
+                .quantity(cart.getQuantity())
+                .build();
     }
 }
