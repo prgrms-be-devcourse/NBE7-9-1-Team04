@@ -1,6 +1,6 @@
 package com.backend.domain.order.dto;
 
-import com.backend.domain.order.entity.Order;
+import com.backend.domain.order.entity.Orders;
 
 import java.util.List;
 import java.util.stream.Collectors;
