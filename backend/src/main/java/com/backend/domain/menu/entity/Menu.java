@@ -16,7 +16,7 @@ public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "menu_id", nullable = false)
+    @Column(nullable = false)
     private Long menuId;  // 메뉴 ID
 
     @Column(nullable = false, length = 255)
@@ -25,21 +25,21 @@ public class Menu {
     @Column(nullable = false)
     private int price;    // 메뉴 가격
 
-    @Column(name = "is_sold_out", nullable = false)
+    @Column(nullable = false)
     private Boolean isSoldOut;  // 품절 여부
 
     @Column(columnDefinition = "TEXT")
     private String description; // 메뉴 설명
 
-    @Column(name = "image_url", length = 255)
+    @Column(length = 255)
     private String imageUrl;    // 메뉴 이미지 URL
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;  // 생성 시간
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(nullable = false)
     private LocalDateTime updatedAt;  // 수정 시간
 
     public Menu(String name, int price, Boolean isSoldOut, String description, String imageUrl) {
