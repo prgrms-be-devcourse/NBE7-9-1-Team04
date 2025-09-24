@@ -1,18 +1,15 @@
 package com.backend.domain.menu.entity;
 
+import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "menu")
 @Getter
 @NoArgsConstructor
-public class Menu {
+public class Menu extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +23,7 @@ public class Menu {
     private int price;    // 메뉴 가격
 
     @Column(nullable = false)
-    private Boolean isSoldOut;  // 품절 여부
+    private Boolean isSoldOut = false;  // 품절 여부
 
     @Column(columnDefinition = "TEXT")
     private String description; // 메뉴 설명
@@ -34,18 +31,9 @@ public class Menu {
     @Column(length = 255)
     private String imageUrl;    // 메뉴 이미지 URL
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;  // 생성 시간
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;  // 수정 시간
-
-    public Menu(String name, int price, Boolean isSoldOut, String description, String imageUrl) {
+    public Menu(String name, int price, String description, String imageUrl) {
         this.name = name;
         this.price = price;
-        this.isSoldOut = isSoldOut;
         this.description = description;
         this.imageUrl = imageUrl;
     }
