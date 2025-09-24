@@ -12,12 +12,12 @@ public record MenuDto(
 ) {
     public MenuDto(Menu menu) {
         this(
-                menu.getMenu_id(),
+                menu.getMenuId(),
                 menu.getName(),
                 menu.getPrice(),
-                menu.getIs_sold_out(),
+                menu.getIsSoldOut(),
                 menu.getDescription(),
-                menu.getImage_url()
+                menu.getImageUrl()
         );
     }
 
