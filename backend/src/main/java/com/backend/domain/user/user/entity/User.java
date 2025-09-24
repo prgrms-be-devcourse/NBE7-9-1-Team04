@@ -22,8 +22,7 @@ public class User {
     private LocalDateTime modify_date;
     private int level;
 
-    public User(Long id, String email, String password, String phoneNumber, int level) {
-        this.user_id = id;
+    public User(String email, String password, String phoneNumber, int level) {
         this.email = email;
         this.password = password;
         this.phone_number = phoneNumber;
