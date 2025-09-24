@@ -7,8 +7,8 @@ import com.backend.domain.order.entity.OrderDetails;
  */
 public record OrderDetailsDto(
         Long itemId,
-        // Long menuId,
-//        String menuName,
+//        Long menuId,
+        String menuName,
         int quantity,
         int price
 ) {
@@ -16,8 +16,8 @@ public record OrderDetailsDto(
     public OrderDetailsDto(OrderDetails details) {
         this(
                 details.getOrderItemId(),
-                // details.getMenu().getMenuId(), // Menu 엔티티에 getMenuId()가 있다고 가정
-//                details.getMenuName(),
+//                details.getMenu().getMenuId(), // Menu 엔티티에 getMenuId()가 있다고 가정
+                details.getMenuName(),
                 details.getQuantity(),
                 details.getOrderPrice()
         );

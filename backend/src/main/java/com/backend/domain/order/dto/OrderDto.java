@@ -2,7 +2,9 @@ package com.backend.domain.order.dto;
 
 import com.backend.domain.order.entity.Orders;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -13,21 +15,25 @@ public record OrderDto(
         Long orderId,
 //        Long userId,
         String status,
-        int totalAmount,
-//        LocalDateTime orderTime,
+        int orderAmount,
+        LocalDateTime orderTime,
         List<OrderDetailsDto> details
 ) {
     // Entity를 DTO로 변환하는 생성자
     public OrderDto(Orders order) {
         this(
                 order.getOrderId(),
-//                order.getUser_id().getUserId(), // User 엔티티에 getUserId()가 있다고 가정
+//                order.getUser().getUserId(),
                 order.getOrderStatus().name(),
                 order.getOrderAmount(),
-//                order.getOrderTime(),
+                order.getCreateDate(),
                 order.getOrderDetails().stream()
                         .map(OrderDetailsDto::new)
                         .collect(Collectors.toList())
         );
+    }
+
+    public OrderDto(Optional<Orders> updatedOrder) {
+        this(updatedOrder.orElseThrow(() -> new IllegalArgumentException("Order not found")));
     }
 }
