@@ -30,7 +30,7 @@ public class OrderController {
     public record OrderItemRequest(
             @NotNull Long productId,
             @NotBlank String menuName,
-            @Min(1) int quantity,
+            @Min(0) int quantity,
             @Min(0) int orderPrice
     ) {
     }
@@ -40,7 +40,8 @@ public class OrderController {
             @Email String email,
             @Min(0) int amount,
             @NotEmpty List<OrderItemRequest> items
-    ) { }
+    ) {
+    }
 
 
     @PostMapping
@@ -50,7 +51,6 @@ public class OrderController {
             @Valid @RequestBody OrderCreateRequest request
     ) {
         Orders order = orderService.createOrder(request);
-
         return ResponseEntity.ok(ApiResponse.success(new OrderDto(order)));
     }
 
@@ -83,6 +83,8 @@ public class OrderController {
             LocalDateTime orderTime
     ) {
     }
+
+
 
     @GetMapping
     @Operation(summary = "사용자 주문 목록 조회")

@@ -2,6 +2,8 @@ package com.backend.domain.order.entity;
 
 import com.backend.domain.menu.entity.Menu;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,4 +39,11 @@ public class OrderDetails {
 
     @Column(length = 100, nullable = false)
     private String menuName;
+
+    public OrderDetails(Menu menu, int quantity, int orderPrice , String menuName) {
+        this.menu = menu;
+        this.quantity = quantity;
+        this.orderPrice = orderPrice;
+        this.menuName = menuName;
+    }
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public record OrderDto(
         Long orderId,
-//        Long userId,
+        Long userId,
         String status,
         int orderAmount,
         LocalDateTime orderTime,
@@ -23,7 +23,7 @@ public record OrderDto(
     public OrderDto(Orders order) {
         this(
                 order.getOrderId(),
-//                order.getUser().getUserId(),
+                order.getUser().getUserId(),
                 order.getOrderStatus().name(),
                 order.getOrderAmount(),
                 order.getCreateDate(),

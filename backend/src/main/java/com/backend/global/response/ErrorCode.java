@@ -22,7 +22,15 @@ public enum ErrorCode {
     // 수량을 0 이하의 값으로 변경하려고 할 때 발생시킵니다.
     INVALID_QUANTITY("C004", HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상이어야 합니다."),
     // 장바구니가 비어있는 상태에서 주문 시도할 때 발생시킵니다.
-    EMPTY_CART("C006", HttpStatus.NOT_FOUND, "장바구니가 비어 있습니다.");
+    EMPTY_CART("C006", HttpStatus.NOT_FOUND, "장바구니가 비어 있습니다."),
+
+    //주문
+    // 주문에 포함된 상품 중 하나라도 품절된 경우 발생시킵니다.
+    SOLD_OUT_PRODUCT("O001", HttpStatus.CONFLICT, "품절된 상품이 포함되어 있습니다."),
+    // 주문 가격이 예상 가격과 일치하지 않을 때 발생시킵니다.
+    INVALID_ORDER_PRICE("O002", HttpStatus.BAD_REQUEST, "주문 가격이 올바르지 않습니다."),
+    // 주문 총액이 예상 총액과 일치하지 않을 때 발생시킵니다.
+    INVALID_ORDER_AMOUNT("O003", HttpStatus.BAD_REQUEST, "주문 총액이 올바르지 않습니다."),;
 
     private final String code;
     private final HttpStatus status;
