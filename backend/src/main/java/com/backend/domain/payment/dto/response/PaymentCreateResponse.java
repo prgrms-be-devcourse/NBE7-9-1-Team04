@@ -2,10 +2,15 @@ package com.backend.domain.payment.dto.response;
 
 import com.backend.domain.payment.entity.Payment;
 import com.backend.domain.payment.entity.PaymentStatus;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-record PaymentResponseDto(
+/*
+ * 결제 요청 응답 DTO
+ */
+@Builder
+public record PaymentCreateResponse(
         Long paymentId,
         int paymentAmount,
         String paymentMethod,
@@ -13,7 +18,7 @@ record PaymentResponseDto(
         LocalDateTime createDate,
         LocalDateTime modifyDate
 ) {
-    public PaymentResponseDto(Payment payment) {
+    public PaymentCreateResponse(Payment payment) {
         this(
                 payment.getPaymentId(),
                 payment.getPaymentAmount(),

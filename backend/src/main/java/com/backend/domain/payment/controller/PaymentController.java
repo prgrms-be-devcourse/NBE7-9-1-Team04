@@ -1,13 +1,38 @@
 package com.backend.domain.payment.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.backend.domain.payment.dto.request.PaymentCreateRequest;
+import com.backend.domain.payment.dto.response.PaymentCreateResponse;
+import com.backend.domain.payment.service.PaymentService;
+import com.backend.global.response.ApiResponse;
+import com.backend.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@Controller
-@Tag(name = "Controller 이름", description = "Controller 설명")
+@Slf4j
 public class PaymentController {
+    private final PaymentService paymentService;
+
+    /*
+    * 결제 생성 API
+    */
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<PaymentCreateResponse>> createPayment(
+            @RequestBody PaymentCreateRequest request
+            ) {
+        try {
+            PaymentCreateResponse response = paymentService.createPayment(request);
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("결제 요청 API 시스템 오류", e);
+            return ResponseEntity.badRequest().body(ApiResponse.error(ErrorCode.NOT_FOUND_PAYMENT));
+        }
+    }
 }

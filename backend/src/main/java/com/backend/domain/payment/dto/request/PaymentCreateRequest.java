@@ -3,7 +3,11 @@ package com.backend.domain.payment.dto.request;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.payment.entity.Payment;
 
-record PaymentRequestDto (
+/*
+ * 결제 요청 DTO
+ */
+public record PaymentCreateRequest(
+        Long orderId,
         int paymentAmount,
         String paymentMethod
 ) {

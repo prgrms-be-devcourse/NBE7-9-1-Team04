@@ -3,13 +3,12 @@ package com.backend.domain.payment.entity;
 import com.backend.domain.order.entity.Orders;
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +32,7 @@ public class Payment extends BaseEntity {
     @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
     private Orders orders;
 
+    @Builder
     public Payment(int paymentAmount, String paymentMethod, Orders orders) {
         this.paymentAmount = paymentAmount;
         this.paymentMethod = paymentMethod;
