@@ -5,10 +5,8 @@ import com.backend.domain.cart.controller.dto.request.CartUpdateRequest;
 import com.backend.domain.cart.controller.dto.response.CartListResponse;
 import com.backend.domain.cart.controller.dto.response.CartResponse;
 import com.backend.global.response.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
