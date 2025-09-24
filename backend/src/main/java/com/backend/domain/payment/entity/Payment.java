@@ -1,11 +1,12 @@
 package com.backend.domain.payment.entity;
 
+import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-public class Payment {
+public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // 결제 테이블 키
