@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "MenuController", description = "메뉴 조회 및 관리자 메뉴 API")
@@ -24,6 +26,14 @@ public class MenuController {
 
     private final MenuService menuService;
     private final UserRepository userRepository;
+
+    // =========== 사용자 ============
+
+    @GetMapping("/api/menu")
+    @Operation(summary = "메뉴 조회", description = "전체 메뉴(품절 제외)를 조회합니다. (사용자 전용)")
+    public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenus() {
+        return ResponseEntity.ok(menuService.getAllMenu());
+    }
 
     // ============ 관리자 ============
 
@@ -35,5 +45,11 @@ public class MenuController {
 
         MenuResponse response = menuService.createMenu(request);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/api/admin/menu")
+    @Operation(summary = "메뉴 조회 (관리자)", description = "품절 여부와 상관없이 전체 메뉴를 조회합니다.")
+    public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenusForAdmin() {
+        return ResponseEntity.ok(menuService.getAllMenuForAdmin());
     }
 }

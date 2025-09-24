@@ -31,9 +31,10 @@ public class Menu extends BaseEntity {
     @Column(length = 255)
     private String imageUrl;    // 메뉴 이미지 URL
 
-    public Menu(String name, int price, String description, String imageUrl) {
+    public Menu(String name, int price, Boolean isSoldOut, String description, String imageUrl) {
         this.name = name;
         this.price = price;
+        this.isSoldOut = isSoldOut != null ? isSoldOut : false;
         this.description = description;
         this.imageUrl = imageUrl;
     }
