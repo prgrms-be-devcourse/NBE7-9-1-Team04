@@ -1,4 +1,29 @@
 package com.backend.domain.user.user.dto;
 
-public class UserDto {
+import com.backend.domain.user.user.entity.User;
+
+import java.time.LocalDateTime;
+
+
+record UserDto (
+        Long userId,
+        String userEmail,
+        String password,
+        String phoneNumber,
+        LocalDateTime createDate,
+        LocalDateTime modifyDate,
+        int level
+) {
+
+    public UserDto(User user){
+        this(
+                user.getUserId(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getPhoneNumber(),
+                null, // base Entity 도입시 해당 부분으로 객체 적용.
+                null,
+                user.getLevel()
+        );
+    }
 }
