@@ -21,7 +21,7 @@ public class OrderDetails {
 
     // Order 엔티티와의 관계 (다대일)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Order order;
+    private Orders order;
 
     // Menu 엔티티와의 관계 (다대일) - 메뉴 도메인이 만들어지면 연결
     // @ManyToOne(fetch = FetchType.LAZY)
