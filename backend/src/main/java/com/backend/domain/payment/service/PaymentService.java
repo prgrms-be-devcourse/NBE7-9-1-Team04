@@ -4,6 +4,7 @@ import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
 import com.backend.domain.payment.dto.request.PaymentCreateRequest;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
+import com.backend.domain.payment.dto.response.PaymentInquiryResponse;
 import com.backend.domain.payment.entity.Payment;
 import com.backend.domain.payment.repository.PaymentRepository;
 import com.backend.global.exception.BusinessException;
@@ -36,5 +37,13 @@ public class PaymentService {
 //        orderRepository.save(orders);
 
         return new PaymentCreateResponse(savePayment);
+    }
+
+    // 결제 단건 조회
+    public PaymentInquiryResponse getPayment(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+
+        return new PaymentInquiryResponse(payment);
     }
 }
