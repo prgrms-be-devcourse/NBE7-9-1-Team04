@@ -20,8 +20,6 @@ public class User {
     private String password;
     @Column(length = 15, nullable = false)
     private String phoneNumber;
-    private LocalDateTime createDate;
-    private LocalDateTime modifyDate;
     private int level;
 
     public User(String email, String password, String phoneNumber, int level) {
@@ -29,7 +27,5 @@ public class User {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.level = level;
-        this.createDate = LocalDateTime.now();
-        this.modifyDate = LocalDateTime.now();
     }
 }

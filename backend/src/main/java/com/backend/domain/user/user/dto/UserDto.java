@@ -21,8 +21,8 @@ record UserDto (
                 user.getEmail(),
                 user.getPassword(),
                 user.getPhoneNumber(),
-                user.getCreateDate(),
-                user.getModifyDate(),
+                null, // base Entity 도입시 해당 부분으로 객체 적용.
+                null,
                 user.getLevel()
         );
     }
