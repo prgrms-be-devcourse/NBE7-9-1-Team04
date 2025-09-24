@@ -45,11 +45,27 @@ public class UserService {
     }
 
     public UserDto getUserByUserId(Long userId) throws Exception {
-        Optional<Users> optionalUsers = userRepository.getUsersByUserId(userId);
+        Optional<Users> optionalUser = userRepository.getUsersByUserId(userId);
+        if(!optionalUser.isPresent()){
+            throw new Exception("User not found");
+        }
+
+        return new UserDto(optionalUser.get());
+    }
+
+    public UserDto getUserByApiKey(String apikey) throws Exception {
+        Optional<Users> optionalUsers = userRepository.getUserByApiKey(apikey);
         if(!optionalUsers.isPresent()){
             throw new Exception("User not found");
         }
 
         return new UserDto(optionalUsers.get());
     }
+
+    public String changeApiKey(Users user) throws Exception {
+        String newApiKey = user.changeApiKey();
+        userRepository.save(user);
+        return newApiKey;
+    }
+
 }
