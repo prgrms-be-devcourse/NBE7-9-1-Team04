@@ -1,7 +1,7 @@
 package com.backend.domain.user.user.entity;
 
+import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-public class User {
+public class Users extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -22,10 +22,14 @@ public class User {
     private String phoneNumber;
     private int level;
 
-    public User(String email, String password, String phoneNumber, int level) {
+    public Users(String email, String password, String phoneNumber, int level) {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.level = level;
+    }
+
+    public boolean isMatchedPassword(String password) {
+        return this.password.equals(password);
     }
 }
