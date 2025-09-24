@@ -2,7 +2,6 @@ package com.backend.domain.order.dto;
 
 import com.backend.domain.order.entity.Order;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +14,7 @@ public record OrderDto(
 //        Long userId,
         String status,
         int totalAmount,
-        LocalDateTime orderTime,
+//        LocalDateTime orderTime,
         List<OrderDetailsDto> details
 ) {
     // Entity를 DTO로 변환하는 생성자
@@ -25,7 +24,7 @@ public record OrderDto(
 //                order.getUser_id().getUserId(), // User 엔티티에 getUserId()가 있다고 가정
                 order.getOrderStatus().name(),
                 order.getOrderAmount(),
-                order.getOrderTime(),
+//                order.getOrderTime(),
                 order.getOrderDetails().stream()
                         .map(OrderDetailsDto::new)
                         .collect(Collectors.toList())

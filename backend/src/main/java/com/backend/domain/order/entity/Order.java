@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +28,6 @@ public class Order {
 
     @Column(nullable = false)
     private int orderAmount;
-
-    @Column(nullable = false)
-    private LocalDateTime orderTime;
 
     // OrderDetails 엔티티와의 관계 (일대다)
     @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.LAZY)
