@@ -72,6 +72,8 @@ public class OrderService {
         Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED);
         order.addOrderDetails(orderDetails);
 
+        // 5. 장바구니 삭제 구현 예정
+
         return orderRepository.save(order);
     }
 
@@ -139,6 +141,7 @@ public class OrderService {
                 .toList();
     }
 
+    @Transactional
     public Orders cancelOrder(UserDto actor, Long orderId) {
 
         // 1. 주문 존재 확인
@@ -150,8 +153,9 @@ public class OrderService {
             throw new BusinessException(ErrorCode.BAD_CREDENTIAL);
         }
 
-        // 3. 주문 상태가 CREATED인지 확인
-        if (order.getOrderStatus() != OrderStatus.CREATED) {
+        // 3. 주문 상태가 CREATED 또는 PAID인지 확인
+        if (order.getOrderStatus() != OrderStatus.CREATED &&
+                order.getOrderStatus() != OrderStatus.PAID) {
             throw new BusinessException(ErrorCode.INVALID_STATUS_TRANSITION);
         }
 
@@ -167,5 +171,25 @@ public class OrderService {
         order.setOrderStatus(OrderStatus.CANCELED);
 
         return order;
+    }
+
+    @Transactional
+    public void deleteOrder(UserDto actor, Long orderId) {
+        // 1. 주문 존재 확인
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
+
+        // 2. 주문이 해당 유저의 것인지 확인
+        if (!order.getUser().getUserId().equals(actor.userId())) {
+            throw new BusinessException(ErrorCode.BAD_CREDENTIAL);
+        }
+
+        // 3. 주문 상태가 CANCELED인지 확인
+        if (order.getOrderStatus() != OrderStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.INVALID_STATUS_TRANSITION);
+        }
+
+        // 4. 주문 삭제
+        orderRepository.delete(order);
     }
 }

@@ -4,6 +4,7 @@ import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
 import com.backend.domain.order.dto.response.OrderCancelResponse;
 import com.backend.domain.order.dto.response.OrderCreateResponse;
+import com.backend.domain.order.dto.response.OrderDeleteResponse;
 import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
@@ -83,6 +84,23 @@ public class OrderController {
                 order.getOrderId(),
                 "주문이 성공적으로 취소되었습니다.",
                 order.getOrderStatus().name()
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @DeleteMapping("/{orderId}/delete")
+    @Operation(summary = "주문 삭제")
+    public ResponseEntity<ApiResponse<OrderDeleteResponse>> deleteOrder(
+            @PathVariable Long orderId
+    ) throws Exception {
+        UserDto actor = rq.getUser();
+        orderService.deleteOrder(actor,orderId);
+
+        // 엔티티 -> DTO 변환
+        OrderDeleteResponse response = new OrderDeleteResponse(
+                orderId,
+                "주문이 성공적으로 삭제되었습니다."
         );
 
         return ResponseEntity.ok(ApiResponse.success(response));
