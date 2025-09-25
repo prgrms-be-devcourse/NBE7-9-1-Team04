@@ -50,23 +50,8 @@ public class UserController {
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "새로운 회원을 등록합니다.")
     public ResponseEntity<ApiResponse> join(
-            @Valid @RequestBody UserController.UserJoinReqBody form,
-            BindingResult bindingResult
+            @Valid @RequestBody UserController.UserJoinReqBody form
     ) throws Exception {
-        if(bindingResult.hasErrors()){
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            StringBuilder errorMessageBuilder = new StringBuilder();
-            for(FieldError error : errors){
-                errorMessageBuilder.append(error.getDefaultMessage());
-            }
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(
-                    "400",
-                    errorMessageBuilder.toString(),
-                    null
-            ));
-        }
-
         userService.createUser( form.email, form.password, form.phoneNumber);
         return ResponseEntity.ok(ApiResponse.success());
     }
@@ -85,31 +70,12 @@ public class UserController {
     @GetMapping("/login")
     @Operation(summary = "회원 로그인", description = "사용자의 정보를 확인하고 ApiKey를 클라이언트에 전송합니다.")
     public ResponseEntity<ApiResponse> login(
-            @Valid @RequestBody UserLoginReqBody reqBody,
-            BindingResult bindingResult
+            @Valid @RequestBody UserLoginReqBody reqBody
     ) throws Exception {
-        //Todo Binding Result 처리 어떻게 할지
-        if(bindingResult.hasErrors()){
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            StringBuilder errorMessageBuilder = new StringBuilder();
-            for(FieldError error : errors){
-                errorMessageBuilder.append(error.getDefaultMessage());
-            }
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(
-                    "400",
-                    errorMessageBuilder.toString(),
-                    null
-            ));
-        }
 
         UserDto userDto = userService.login(reqBody.email,reqBody.password);
-        Cookie cookie = new Cookie("apiKey", userDto.apiKey());
-        cookie.setMaxAge(3600);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        httpServletResponse.addCookie(cookie);
+        rq.setCookie("apiKey", userDto.apiKey());
+        //TODO Cookie 수명 얼마로 잡을지 생각해보기.
         return ResponseEntity.ok(ApiResponse.success());
     }
 
@@ -137,22 +103,9 @@ public class UserController {
     @PutMapping("/modify")
     @Operation(summary = "회원 정보 수정", description = "현재 로그인 된 회원의 정보를 수정합니다.")
     public ResponseEntity<ApiResponse<UserDto>> modify(
-            @Valid @RequestBody UserModifyReqBody reqBody,
-            BindingResult bindingResult
+            @Valid @RequestBody UserModifyReqBody reqBody
     ) throws Exception {
-        if(bindingResult.hasErrors()){
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            StringBuilder errorMessageBuilder = new StringBuilder();
-            for(FieldError error : errors){
-                errorMessageBuilder.append(error.getDefaultMessage());
-            }
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(
-                    "400",
-                    errorMessageBuilder.toString(),
-                    null
-            ));
-        }
         // 바꿀 정보라곤 전화번호 뿐이라 일단 이거라도 바꿉니다...
         String apiKey= rq.getCookieValue("apiKey", "");
         UserDto userDto = userService.modifyPhoneNumber(reqBody.phoneNumber, apiKey);
