@@ -79,7 +79,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
-        if(payment.getPaymentStatus() == PaymentStatus.CANCELLED) {
+        if(payment.getPaymentStatus() == PaymentStatus.CANCELED) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
         }
 
@@ -90,5 +90,26 @@ public class PaymentService {
         payment.cancel();
 
         return new PaymentCancelResponse(payment);
+    }
+
+    // 취소된 결제 내역 삭제
+    @Transactional
+    public void deletePayment(@Valid Long paymentId) {
+        if(paymentId == null || paymentId <= 0) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
+        }
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+
+        if(payment.getPaymentStatus() != PaymentStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.PAYMENT_DELETE_FAILED);
+        }
+
+        if(payment.getOrders() != null) {
+            payment.getOrders().setPayment(null);
+        }
+
+        paymentRepository.delete(payment);
     }
 }

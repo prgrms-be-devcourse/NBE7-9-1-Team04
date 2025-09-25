@@ -51,9 +51,9 @@ public class Payment extends BaseEntity {
     }
 
     public void cancel() {
-        if(this.paymentStatus == PaymentStatus.CANCELLED) {
+        if(this.paymentStatus == PaymentStatus.CANCELED) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
         }
-        this.paymentStatus = PaymentStatus.CANCELLED;
+        this.paymentStatus = PaymentStatus.CANCELED;
     }
 }

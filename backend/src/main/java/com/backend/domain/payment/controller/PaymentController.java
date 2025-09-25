@@ -62,4 +62,18 @@ public class PaymentController {
         PaymentCancelResponse response = paymentService.cancelPayment(paymentId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    // 취소된 결제 내역 삭제
+    @Operation(
+            summary = "결제 삭제",
+            description = "취소(CANCELED) 상태의 결제 내역만 삭제합니다. " +
+                    "취소되지 않았거나, 존재하지 않는 paymentId에 대한 삭제를 요청할 시 에러를 반환합니다."
+    )
+    @DeleteMapping("/{paymentId}/delete")
+    public ResponseEntity<ApiResponse<Void>> deletePayment(
+            @Valid @PathVariable Long paymentId
+    ){
+        paymentService.deletePayment(paymentId);
+        return ResponseEntity.ok(ApiResponse.success());
+    }
 }
