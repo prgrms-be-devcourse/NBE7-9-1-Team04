@@ -51,7 +51,8 @@ public class CartController implements CartSpecification {
 
     @DeleteMapping
     public ResponseEntity<ApiResponse<Void>> clearCart() {
-        // TODO: 장바구니 전체 비우기 로직 구현
+        // TODO: 현재 로그인한 사용자의 ID를 가져오는 로직 추가 예정
+        cartService.clearCart();
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
