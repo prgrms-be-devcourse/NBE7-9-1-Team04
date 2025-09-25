@@ -2,7 +2,6 @@ package com.backend.domain.order.entity;
 
 import com.backend.domain.payment.entity.Payment;
 import com.backend.domain.user.address.entity.Address;
-import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -49,7 +48,8 @@ public class Orders extends BaseEntity {
 
     //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
     @OneToOne(fetch = FetchType.LAZY)
-    private Payment paymentId;
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 
     public void addOrderDetails(List<OrderDetails> orderDetails) {
         for (OrderDetails detail : orderDetails) {

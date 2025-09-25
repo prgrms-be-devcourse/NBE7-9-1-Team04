@@ -1,20 +1,24 @@
 package com.backend.domain.payment.service;
 
+import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
 import com.backend.domain.payment.dto.request.PaymentCreateRequest;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
 import com.backend.domain.payment.dto.response.PaymentInquiryResponse;
 import com.backend.domain.payment.entity.Payment;
+import com.backend.domain.payment.entity.PaymentStatus;
 import com.backend.domain.payment.repository.PaymentRepository;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
@@ -23,24 +27,42 @@ public class PaymentService {
     @Transactional
     public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
         Orders orders = orderRepository.findById(request.orderId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
-        Payment payment = Payment.builder()
-                .paymentAmount(request.paymentAmount())
-                .paymentMethod(request.paymentMethod())
-                .build();
+        if(request.paymentAmount() <= 0) {
+            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_INVALID);
+        }
 
+        if(orders.getOrderAmount() != request.paymentAmount()){
+            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
+        }
+
+        boolean completePayment = paymentRepository.existsByOrdersAndPaymentStatus(orders, PaymentStatus.COMPLETED);
+        if(completePayment) {
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+
+        Payment payment = request.createPayment(orders);
         Payment savePayment = paymentRepository.save(payment);
 
-        // 주문 데이터에 paymentId 업데이트
-//        orders.setPayment(savePayment);
-//        orderRepository.save(orders);
+        orders.setPayment(savePayment);
+        orderRepository.save(orders);
+
+        orders.setPayment(savePayment);
+        orders.setOrderStatus(OrderStatus.PAID);
+        orderRepository.save(orders);
+
+        payment.complete();
 
         return new PaymentCreateResponse(savePayment);
     }
 
     // 결제 단건 조회
     public PaymentInquiryResponse getPayment(Long paymentId) {
+        if(paymentId == null || paymentId <= 0) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
+        }
+
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
