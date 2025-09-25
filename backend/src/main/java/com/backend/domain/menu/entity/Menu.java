@@ -2,6 +2,9 @@ package com.backend.domain.menu.entity;
 
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,6 +38,14 @@ public class Menu extends BaseEntity {
         this.name = name;
         this.price = price;
         this.isSoldOut = isSoldOut != null ? isSoldOut : false;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateMenu(String name, int price,  Boolean isSoldOut, String description, String imageUrl) {
+        this.name = name;
+        this.price = price;
+        this.isSoldOut = isSoldOut;
         this.description = description;
         this.imageUrl = imageUrl;
     }

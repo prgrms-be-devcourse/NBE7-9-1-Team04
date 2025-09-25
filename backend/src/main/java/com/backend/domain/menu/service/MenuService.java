@@ -2,11 +2,13 @@ package com.backend.domain.menu.service;
 
 import com.backend.domain.menu.dto.MenuAddRequest;
 import com.backend.domain.menu.dto.MenuResponse;
+import com.backend.domain.menu.dto.MenuUpdateRequest;
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ApiResponse;
 import com.backend.global.response.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -62,5 +64,33 @@ public class MenuService {
                 .toList();
 
         return ApiResponse.success(menus);
+    }
+
+    // 메뉴 수정 (관리자)
+    public MenuResponse updateMenu(Long menuId, @Valid MenuUpdateRequest request) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        // 메뉴 이름 중복 체크 (자기 자신 제외)
+        if (menuRepository.existsByNameAndMenuIdNot(request.name(), menuId)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_MENU_NAME);
+        }
+
+        menu.updateMenu(
+                request.name(),
+                request.price(),
+                request.isSoldOut(),
+                request.description(),
+                request.imageUrl()
+        );
+
+        return MenuResponse.from(menuRepository.save(menu));
+    }
+
+    public MenuResponse getMenuById(Long menuId) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        return MenuResponse.from(menu);
     }
 }
