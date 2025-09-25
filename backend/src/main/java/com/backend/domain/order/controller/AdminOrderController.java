@@ -41,8 +41,7 @@ public class AdminOrderController {
         UserDto actor = rq.getUser();
 
         //관리자 인증 로직 구현 예정
-        if(actor.level() != 1)
-        {
+        if (actor.level() != 1) {
             throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
         }
 
@@ -57,7 +56,14 @@ public class AdminOrderController {
     public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody @Valid OrderStatusUpdateRequest reqBody
-    ) {
+    ) throws Exception {
+        //쿠키에서 인증된 유저 가져오기
+        UserDto actor = rq.getUser();
+
+        //관리자 인증 로직 구현 예정
+        if (actor.level() != 1) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
+        }
         // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
         orderService.updateOrderStatus(orderId, reqBody.newStatus());
 

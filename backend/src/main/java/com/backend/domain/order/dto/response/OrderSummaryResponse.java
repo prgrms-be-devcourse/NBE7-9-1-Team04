@@ -10,4 +10,5 @@ public record OrderSummaryResponse(
         String status,             // 주문 상태
         String address,            // 주소
         List<OrderSummaryDetailResponse> items  // 주문 상세 목록
-) {}
+) {
+}

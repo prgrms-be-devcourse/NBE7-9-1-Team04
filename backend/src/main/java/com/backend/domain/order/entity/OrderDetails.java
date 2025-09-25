@@ -39,7 +39,7 @@ public class OrderDetails {
     @Column(length = 100, nullable = false)
     private String menuName;
 
-    public OrderDetails(Menu menu, int quantity, int orderPrice , String menuName) {
+    public OrderDetails(Menu menu, int quantity, int orderPrice, String menuName) {
         this.menu = menu;
         this.quantity = quantity;
         this.orderPrice = orderPrice;

@@ -12,4 +12,5 @@ public record AdminOrderSummaryResponse(
         String userPhone,
         String address,
         List<OrderSummaryDetailResponse> items
-) {}
+) {
+}
