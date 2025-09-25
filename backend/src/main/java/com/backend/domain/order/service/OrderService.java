@@ -115,7 +115,16 @@ public class OrderService {
     // 사용자 ID로 주문 목록 조회
     @Transactional(readOnly = true)
     public List<OrderSummaryResponse> getOrdersByUserId(Long userId) {
+        // 1. 사용자 존재 확인
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 2. 주문 목록 조회
         List<Orders> orders = orderRepository.findByUser_UserId(userId);
+
+        if (orders.isEmpty()) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ORDER);
+        }
 
         return orders.stream()
                 .map(order -> new OrderSummaryResponse(
