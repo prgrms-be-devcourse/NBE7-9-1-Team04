@@ -34,7 +34,7 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
-        if(request.paymentMethod() != PaymentMethod.CARD) {
+        if(request.paymentMethod() == null || request.paymentMethod() != PaymentMethod.CARD) {
             throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 
