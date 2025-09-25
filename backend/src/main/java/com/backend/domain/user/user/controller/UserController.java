@@ -8,6 +8,7 @@ import com.backend.global.response.ApiResponse;
 
 import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,13 +38,16 @@ public class UserController {
             @Email(message = "이메일 양식을 지켜서 입력해주세요.")
             @NotNull(message = "이메일을 입력해주세요.")
             @NotBlank(message = "이메일을 입력해주세요.")
+            @Schema(description = "이메일", defaultValue = "test@email.com")
             String email,
             @NotNull(message = "비밀번호를 입력해주세요.")
             @Size(min=8, max= 20, message = "비밀번호 길이는 8자 이상, 20자 이하입니다.")
+            @Schema(description = "비밀번호" , defaultValue = "12345678")
             String password,
             @NotBlank(message = "전화번호를 입력해주세요.")
             @NotNull(message = "전화번호를 입력해주세요.")
             @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호 양식을 지켜주세요.")
+            @Schema(description = "전화번호", defaultValue = "010-1234-1234")
             String phoneNumber
     ) {}
 
@@ -60,14 +64,16 @@ public class UserController {
             @NotBlank
             @NotNull
             @Email
+            @Schema(description = "이메일", defaultValue = "test@email.com")
             String email,
             @NotBlank
             @Size(min=8, max = 20)
+            @Schema(description = "비밀번호" , defaultValue = "12345678")
             String password
     )
     {}
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @Operation(summary = "회원 로그인", description = "사용자의 정보를 확인하고 ApiKey를 클라이언트에 전송합니다.")
     public ResponseEntity<ApiResponse> login(
             @Valid @RequestBody UserLoginReqBody reqBody
@@ -97,6 +103,7 @@ public class UserController {
 
     record UserModifyReqBody(
             @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호 양식을 지켜주세요.")
+            @Schema(description = "전화번호",defaultValue = "010-4321-4321")
             String phoneNumber
     ){}
 
