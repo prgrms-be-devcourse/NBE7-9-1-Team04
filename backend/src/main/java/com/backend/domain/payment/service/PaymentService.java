@@ -11,6 +11,7 @@ import com.backend.domain.payment.entity.Payment;
 import com.backend.domain.payment.entity.PaymentMethod;
 import com.backend.domain.payment.entity.PaymentStatus;
 import com.backend.domain.payment.repository.PaymentRepository;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class PaymentService {
 
     // 결제 요청
     @Transactional
-    public PaymentCreateResponse createPayment(PaymentCreateRequest request) {
-        Orders orders = orderRepository.findById(request.orderId())
+    public PaymentCreateResponse createPayment(PaymentCreateRequest request, UserDto currentUser) {
+        Orders orders = orderRepository.findByOrderIdAndUser_UserId(request.orderId(), currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
         if(orders.getOrderAmount() != request.paymentAmount()){
@@ -58,12 +59,12 @@ public class PaymentService {
     }
 
     // 결제 단건 조회
-    public PaymentInquiryResponse getPayment(Long paymentId) {
+    public PaymentInquiryResponse getPayment(Long paymentId, UserDto currentUser) {
         if(paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
 
-        Payment payment = paymentRepository.findById(paymentId)
+        Payment payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
         return new PaymentInquiryResponse(payment);
@@ -71,12 +72,12 @@ public class PaymentService {
 
     // 결제 단건 취소
     @Transactional
-    public PaymentCancelResponse cancelPayment(@Valid Long paymentId) {
+    public PaymentCancelResponse cancelPayment(@Valid Long paymentId, UserDto currentUser) {
         if(paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
 
-        Payment payment = paymentRepository.findById(paymentId)
+        Payment payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
         if(payment.getPaymentStatus() == PaymentStatus.CANCELED) {
@@ -94,12 +95,12 @@ public class PaymentService {
 
     // 취소된 결제 내역 삭제
     @Transactional
-    public void deletePayment(@Valid Long paymentId) {
+    public void deletePayment(@Valid Long paymentId, UserDto currentUser) {
         if(paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
 
-        Payment payment = paymentRepository.findById(paymentId)
+        Payment payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
         if(payment.getPaymentStatus() != PaymentStatus.CANCELED) {
