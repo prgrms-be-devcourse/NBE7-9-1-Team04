@@ -75,8 +75,6 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-
-
     @Transactional
     public void updateOrderStatus(Long orderId, String status) {
         // 1. 주문 존재 확인
@@ -116,6 +114,6 @@ public class OrderService {
     }
 
     public List<Orders> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUserUserId(userId);
+        return orderRepository.findByUser_UserId(userId);
     }
 }
