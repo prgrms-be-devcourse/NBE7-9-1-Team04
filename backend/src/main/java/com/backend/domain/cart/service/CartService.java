@@ -36,7 +36,7 @@ public class CartService {
         Menu menu = menuRepository.findById(request.getMenuId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
-        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId()) // menu.getId()도 menu.getMenuId()로 바뀌었을 수 있습니다.
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId())
                 .orElse(null);
 
         if (cartItem != null) {
@@ -91,5 +91,15 @@ public class CartService {
     @Transactional
     public void clearCart(UserDto userDto) {
         cartRepository.deleteAllByUser_UserId(userDto.userId());
+    }
+
+    /**
+     * 주문 완료 시 장바구니에서 해당 메뉴 삭제
+     * parameter : 주문 완료된 munuId 리스트
+     */
+    @Transactional
+    public void deleteOrderedItems(UserDto userDto, List<Long> orderedMenuIds) {
+        List<Cart> cartItemsToDelete = cartRepository.findByUser_UserIdAndMenu_MenuIdIn(userDto.userId(), orderedMenuIds);
+        cartRepository.deleteAll(cartItemsToDelete);
     }
 }
