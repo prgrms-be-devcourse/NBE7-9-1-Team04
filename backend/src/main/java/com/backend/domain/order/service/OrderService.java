@@ -5,6 +5,8 @@ import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.domain.order.controller.OrderController;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderDetailsCreateRequest;
+import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
+import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
@@ -113,7 +115,24 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
-    public List<Orders> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUser_UserId(userId);
+    @Transactional(readOnly = true)
+    public List<OrderSummaryResponse> getOrdersByUserId(Long userId) {
+        List<Orders> orders = orderRepository.findByUser_UserId(userId);
+
+        return orders.stream()
+                .map(order -> new OrderSummaryResponse(
+                        order.getOrderId(),
+                        order.getCreateDate(),
+                        order.getOrderAmount(),
+                        order.getOrderStatus().name(),
+                        order.getOrderDetails().stream()
+                                .map(detail -> new OrderSummaryDetailResponse(
+                                        detail.getMenu().getName(),
+                                        detail.getQuantity(),
+                                        detail.getOrderPrice()
+                                ))
+                                .toList()
+                ))
+                .toList();
     }
 }

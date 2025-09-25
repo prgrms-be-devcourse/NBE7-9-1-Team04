@@ -3,13 +3,17 @@ package com.backend.domain.order.controller;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
 import com.backend.domain.order.dto.response.OrderCreateResponse;
+import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
+import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
+import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.address.repository.AddressRepository;
+import com.backend.domain.user.address.service.AddressService;
 import com.backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,7 +48,6 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody @Valid OrderStatusUpdateRequest reqBody
-
     ) {
         // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
         orderService.updateOrderStatus(orderId, reqBody.newStatus());
@@ -54,31 +57,13 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
     }
 
-    public record OrderSummaryResponse(
-            Long orderId,
-            String status,
-            int orderAmount,
-            LocalDateTime orderTime
-    ) {
-    }
-
     @GetMapping
     @Operation(summary = "사용자 주문 목록 조회")
     public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders(
             @RequestParam Long userId
     ) {
-        List<Orders> orders = orderService.getOrdersByUserId(userId);
-
-        // Orders → OrderSummaryResponse 변환
-        List<OrderSummaryResponse> summaries = orders.stream()
-                .map(order -> new OrderSummaryResponse(
-                        order.getOrderId(),
-                        order.getOrderStatus().name(),
-                        order.getOrderAmount(),
-                        order.getCreateDate()
-                ))
-                .toList();
-
+        //주문 조회 로직
+        List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(userId);
         return ResponseEntity.ok(ApiResponse.success(summaries));
     }
 }

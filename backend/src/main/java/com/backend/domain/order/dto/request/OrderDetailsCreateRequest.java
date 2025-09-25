@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-// 주문 상세 요청 DTO
+// 주문 생성시 상세 요청 DTO
 public record OrderDetailsCreateRequest(
         @NotNull Long productId,
         @NotBlank String menuName,
