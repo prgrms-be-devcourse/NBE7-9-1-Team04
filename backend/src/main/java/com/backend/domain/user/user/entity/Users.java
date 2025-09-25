@@ -4,11 +4,15 @@ import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
+
 @NoArgsConstructor
 public class Users extends BaseEntity {
     @Id
@@ -21,12 +25,20 @@ public class Users extends BaseEntity {
     @Column(length = 15, nullable = false)
     private String phoneNumber;
     private int level;
+    private String apiKey;
 
     public Users(String email, String password, String phoneNumber, int level) {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.level = level;
+        this.apiKey = UUID.randomUUID().toString();
+    }
+
+    public String changeApiKey() throws Exception {
+        String newApiKey = UUID.randomUUID().toString();
+        this.apiKey = newApiKey;
+        return newApiKey;
     }
 
     public boolean isMatchedPassword(String password) {
