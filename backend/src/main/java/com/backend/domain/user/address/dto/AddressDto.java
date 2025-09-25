@@ -9,7 +9,7 @@ public record AddressDto(
         String addressDetail,
         String postNumber
 ) {
-    AddressDto(Address address) {
+    public AddressDto(Address address) {
         this(
                 address.getAddressId(),
                 address.getUser().getUserId(),

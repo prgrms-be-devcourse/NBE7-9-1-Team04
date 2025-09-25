@@ -15,6 +15,9 @@ public enum ErrorCode {
     EXPIRED_TOKEN("U006", HttpStatus.UNAUTHORIZED, "엑세스 토큰이 만료되었습니다. 토큰을 갱신해주세요."),
     NOT_LOGIN_ACCESS("U007", HttpStatus.UNAUTHORIZED, "로그인되어 있지 않습니다. 로그인 해 주십시오."),
 
+    // 주소
+    NOT_FOUND_ADDRESS("A001",HttpStatus.NOT_FOUND,"해당 주소를 찾을 수 없습니다."),
+
     // 장바구니
     // 장바구니에 추가하려는 상품 ID가 DB에 존재하지 않을 때 사용합니다.
     NOT_FOUND_PRODUCT("C001", HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다."),

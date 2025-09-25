@@ -67,7 +67,7 @@ public class UserController {
     )
     {}
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @Operation(summary = "회원 로그인", description = "사용자의 정보를 확인하고 ApiKey를 클라이언트에 전송합니다.")
     public ResponseEntity<ApiResponse> login(
             @Valid @RequestBody UserLoginReqBody reqBody

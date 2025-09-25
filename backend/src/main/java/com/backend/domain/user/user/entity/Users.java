@@ -1,5 +1,6 @@
 package com.backend.domain.user.user.entity;
 
+import com.backend.domain.user.address.entity.Address;
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +29,9 @@ public class Users extends BaseEntity {
     private int level;
     private String apiKey;
 
+    @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE} , orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
+
     public Users(String email, String password, String phoneNumber, int level) {
         this.email = email;
         this.password = password;
@@ -43,6 +49,11 @@ public class Users extends BaseEntity {
     public Users changePhoneNumber(String newNumber) throws Exception {
         this.phoneNumber = newNumber;
         return this;
+    }
+
+    public Address addAddress(Address address) {
+        this.addresses.add(address);
+        return address;
     }
 
     public boolean isMatchedPassword(String password) {
