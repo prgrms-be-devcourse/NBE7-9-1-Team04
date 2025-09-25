@@ -4,18 +4,13 @@ import com.backend.domain.menu.dto.MenuAddRequest;
 import com.backend.domain.menu.dto.MenuResponse;
 import com.backend.domain.menu.dto.MenuUpdateRequest;
 import com.backend.domain.menu.service.MenuService;
-import com.backend.domain.user.user.entity.Users;
-import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.domain.user.user.service.UserService;
-import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ApiResponse;
-import com.backend.global.response.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,13 +21,14 @@ import java.util.List;
 public class MenuController {
 
     private final MenuService menuService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // =========== 사용자 ============
 
     @GetMapping("/api/menu")
     @Operation(summary = "메뉴 조회", description = "전체 메뉴(품절 제외)를 조회합니다. (사용자 전용)")
     public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenus() {
+        // TODO: 메뉴 조회 로직 구현
         return ResponseEntity.ok(menuService.getAllMenu());
     }
 
@@ -59,6 +55,7 @@ public class MenuController {
     public ResponseEntity<ApiResponse<MenuResponse>> getMenuById(
             @PathVariable Long menuId
     ) {
+        // TODO: 메뉴 상세 조회 로직 구현
         MenuResponse response = menuService.getMenuById(menuId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -72,5 +69,15 @@ public class MenuController {
         // TODO: 메뉴 수정 로직 구현
         MenuResponse response = menuService.updateMenu(menuId, request);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @DeleteMapping("/api/admin/menu/{menuId}")
+    @Operation(summary = "메뉴 삭제", description = "관리자가 특정 메뉴를 삭제합니다.")
+    public ResponseEntity<ApiResponse<Void>> deleteMenu(
+            @PathVariable Long menuId
+    ) {
+        // TODO: 메뉴 삭제 로직 구현
+        menuService.deleteMenu(menuId);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
