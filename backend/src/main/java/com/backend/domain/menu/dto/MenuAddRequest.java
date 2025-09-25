@@ -1,5 +1,6 @@
 package com.backend.domain.menu.dto;
 
+import com.backend.domain.menu.entity.Menu;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -26,4 +27,14 @@ public record MenuAddRequest(
         )
         String imageUrl
 ) {
+    // DTO를 메뉴 엔티티로 변환하는 메서드
+    public Menu toEntity() {
+        return Menu.builder()
+                .name(this.name)
+                .price(this.price)
+                .isSoldOut(this.isSoldOut)
+                .description(this.description)
+                .imageUrl(this.imageUrl)
+                .build();
+    }
 }
