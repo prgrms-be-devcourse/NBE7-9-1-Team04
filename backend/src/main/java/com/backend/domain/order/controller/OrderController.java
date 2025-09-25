@@ -1,11 +1,7 @@
 package com.backend.domain.order.controller;
 
 import com.backend.domain.order.dto.request.OrderCreateRequest;
-import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
-import com.backend.domain.order.dto.response.OrderCancelResponse;
-import com.backend.domain.order.dto.response.OrderCreateResponse;
-import com.backend.domain.order.dto.response.OrderDeleteResponse;
-import com.backend.domain.order.dto.response.OrderSummaryResponse;
+import com.backend.domain.order.dto.response.*;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
 import com.backend.domain.user.user.dto.UserDto;
@@ -21,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/orders")
@@ -54,6 +49,17 @@ public class OrderController {
         //주문 조회 로직
         List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.userId());
         return ResponseEntity.ok(ApiResponse.success(summaries));
+    }
+
+    @GetMapping("/{orderId}")
+    @Operation(summary = "주문 단건 조회", description = "특정 주문을 조회합니다.")
+    public ResponseEntity<ApiResponse<OrderSummaryResponse>> getOrderById(
+            @PathVariable Long orderId
+    ) throws Exception {
+        UserDto actor= rq.getUser();
+
+        OrderSummaryResponse order = orderService.getOrderByUserId(actor.userId(),orderId);
+        return ResponseEntity.ok(ApiResponse.success(order));
     }
 
     @PutMapping("/{orderId}/cancel")

@@ -215,4 +215,33 @@ public class OrderService {
         // 4. 주문 삭제
         orderRepository.delete(order);
     }
+
+    public OrderSummaryResponse getOrderByUserId(Long actor, Long orderId) {
+        // 1. 주문 존재 확인
+        Orders order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
+
+        // 2. 주문이 해당 유저의 것인지 확인
+        if (!order.getUser().getUserId().equals(actor)) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
+
+        // DTO 변환
+        List<OrderSummaryDetailResponse> items = order.getOrderDetails().stream()
+                .map(od -> new OrderSummaryDetailResponse(
+                        od.getMenu().getName(),
+                        od.getQuantity(),
+                        od.getOrderPrice()
+                ))
+                .toList();
+
+        return new OrderSummaryResponse(
+                order.getOrderId(),
+                order.getCreateDate(),
+                order.getOrderAmount(),
+                order.getOrderStatus().name(),
+                order.getAddress() != null ? order.getAddress().getAddressDetail() : null,
+                items
+        );
+    }
 }
