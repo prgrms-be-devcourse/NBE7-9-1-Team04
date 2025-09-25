@@ -98,4 +98,12 @@ public class CartService {
 
         return new CartListResponse(cartResponses);
     }
+
+    @Transactional
+    public void clearCart() {
+        Users user = userRepository.findById(TEST_USER_ID)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        cartRepository.deleteAllByUser(user);
+    }
 }
