@@ -25,10 +25,7 @@ public class PaymentService {
         Orders orders = orderRepository.findById(request.orderId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
-        Payment payment = Payment.builder()
-                .paymentAmount(request.paymentAmount())
-                .paymentMethod(request.paymentMethod())
-                .build();
+        Payment payment = request.createPayment(orders);
 
         Payment savePayment = paymentRepository.save(payment);
 
