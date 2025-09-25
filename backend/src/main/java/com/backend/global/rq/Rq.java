@@ -1,5 +1,6 @@
 package com.backend.global.rq;
 
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.service.UserService;
 import com.backend.global.exception.BusinessException;
@@ -20,15 +21,15 @@ public class Rq {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
 
-    public Users getUser(){
+    public UserDto getUser() throws Exception {
         String apiKey;
 
         apiKey = getCookieValue("apiKey","");
         if(apiKey.isBlank()){
             throw new BusinessException(ErrorCode.EXPIRED_TOKEN);
         }
-        // TODO : 이후 UserService에서 해당 유저 찾아서 반환하기
-        return null;
+
+        return userService.getUserByApiKey(apiKey);
     }
 
     public String getCookieValue(String name, String defaultValue) {
