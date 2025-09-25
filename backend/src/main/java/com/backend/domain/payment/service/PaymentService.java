@@ -42,7 +42,7 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 
-        if(request.paymentMethod() == PaymentMethod.CARD) {
+        if(request.paymentMethod() != PaymentMethod.CARD) {
             throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 
