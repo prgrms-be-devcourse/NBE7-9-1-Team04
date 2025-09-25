@@ -2,6 +2,7 @@ package com.backend.domain.cart.service;
 
 import com.backend.domain.cart.controller.dto.request.CartAddRequest;
 import com.backend.domain.cart.controller.dto.request.CartUpdateRequest;
+import com.backend.domain.cart.controller.dto.response.CartListResponse;
 import com.backend.domain.cart.controller.dto.response.CartResponse;
 import com.backend.domain.cart.entity.Cart;
 import com.backend.domain.cart.repository.CartRepository;
@@ -14,6 +15,9 @@ import com.backend.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -79,5 +83,19 @@ public class CartService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
         cartRepository.delete(cartItem);
+    }
+
+    @Transactional(readOnly = true)
+    public CartListResponse getCart() {
+        Users user = userRepository.findById(TEST_USER_ID)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        List<Cart> cartItems = cartRepository.findByUser(user);
+
+        List<CartResponse> cartResponses = cartItems.stream()
+                .map(CartResponse::from)
+                .collect(Collectors.toList());
+
+        return new CartListResponse(cartResponses);
     }
 }

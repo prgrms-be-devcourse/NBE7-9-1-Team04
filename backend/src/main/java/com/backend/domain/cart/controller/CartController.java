@@ -44,8 +44,8 @@ public class CartController implements CartSpecification {
 
     @GetMapping
     public ResponseEntity<ApiResponse<CartListResponse>> getCart() {
-        // TODO: 장바구니 전체 조회 로직 구현
-        CartListResponse response = new CartListResponse(new ArrayList<>());
+        // TODO: 현재 로그인한 사용자의 ID를 가져오는 로직 추가 예정
+        CartListResponse response = cartService.getCart();
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
