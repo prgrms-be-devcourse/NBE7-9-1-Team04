@@ -83,4 +83,12 @@ public class MenuService {
 
         menuRepository.delete(menu);
     }
+
+    public MenuResponse updateMenuSoldOut(Long menuId, Boolean isSoldOut) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        menu.setIsSoldOut(isSoldOut);
+        return MenuResponse.from(menuRepository.save(menu));
+    }
 }
