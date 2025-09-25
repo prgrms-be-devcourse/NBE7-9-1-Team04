@@ -37,7 +37,7 @@ public class MenuController {
 
     // =========== 사용자 ============
 
-    @GetMapping("/api/menu")
+    @GetMapping("/api/menus")
     @Operation(summary = "메뉴 조회", description = "전체 메뉴(품절 제외)를 조회합니다. (사용자 전용)")
     public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenus() {
         // TODO: 메뉴 조회 로직 구현
@@ -46,7 +46,7 @@ public class MenuController {
 
     // ============ 관리자 ============
 
-    @PostMapping("/api/admin/menu")
+    @PostMapping("/api/admin/menus")
     @Operation(summary = "메뉴 생성", description = "새로운 메뉴를 생성합니다. (관리자 전용)")
     public ResponseEntity<ApiResponse<MenuResponse>> createMenu(
             @Valid @RequestBody MenuAddRequest request) throws Exception {
@@ -57,7 +57,7 @@ public class MenuController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/api/admin/menu")
+    @GetMapping("/api/admin/menus")
     @Operation(summary = "메뉴 조회 (관리자)", description = "품절 여부와 상관없이 전체 메뉴를 조회합니다.")
     public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenusForAdmin() throws Exception {
         UserDto actor = rq.getUser();
@@ -66,7 +66,7 @@ public class MenuController {
         return ResponseEntity.ok(menuService.getAllMenuForAdmin());
     }
 
-    @GetMapping("/api/admin/menu/{menuId}")
+    @GetMapping("/api/admin/menus/{menuId}")
     @Operation(summary = "메뉴 상세 조회 (관리자)", description = "특정 메뉴의 상세 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<MenuResponse>> getMenuById(
             @PathVariable Long menuId
@@ -78,7 +78,7 @@ public class MenuController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PutMapping("/api/admin/menu/{menuId}")
+    @PutMapping("/api/admin/menus/{menuId}")
     @Operation(summary = "메뉴 수정", description = "관리자가 특정 메뉴 정보를 수정합니다.")
     public ResponseEntity<ApiResponse<MenuResponse>> updateMenu(
             @PathVariable Long menuId,
@@ -91,7 +91,7 @@ public class MenuController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @DeleteMapping("/api/admin/menu/{menuId}")
+    @DeleteMapping("/api/admin/menus/{menuId}")
     @Operation(summary = "메뉴 삭제", description = "관리자가 특정 메뉴를 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteMenu(
             @PathVariable Long menuId
@@ -103,7 +103,7 @@ public class MenuController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @PatchMapping("/api/admin/menu/{menuId}/isSoldOut")
+    @PatchMapping("/api/admin/menus/{menuId}/isSoldOut")
     @Operation(summary = "메뉴 품절 상태 변경", description = "관리자가 특정 메뉴의 품절 상태를 변경합니다.")
     public ResponseEntity<ApiResponse<MenuResponse>> updateMenuSoldOut(
             @PathVariable Long menuId,
