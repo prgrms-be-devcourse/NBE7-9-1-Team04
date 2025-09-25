@@ -52,6 +52,18 @@ public enum ErrorCode {
     // 취소된 결제에 대해 완료 처리나 재시도를 할 때 발생시킵니다.
     PAYMENT_CANCELLED("P005", HttpStatus.CONFLICT, "취소된 결제입니다.");
   
+    // 메뉴
+    // 이름이 중복되는 메뉴를 생성하려고 할 때 발생시킵니다.
+    DUPLICATE_MENU_NAME("M001", HttpStatus.CONFLICT, "이미 존재하는 메뉴 이름입니다."),
+    // 메뉴 ID가 DB에 존재하지 않을 때 사용합니다.
+    NOT_FOUND_MENU("M002", HttpStatus.NOT_FOUND, "존재하지 않는 메뉴입니다."),
+    // 관리자 권한이 없는 사용자가 관리자 전용 기능을 사용하려고 할 때 발생시킵니다.
+    FORBIDDEN_ADMIN("M003", HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다."),
+    // 메뉴가 품절 상태일 때 발생시킵니다.
+    MENU_SOLD_OUT("M004", HttpStatus.CONFLICT, "품절된 메뉴입니다."),
+    // 메뉴 가격이 음수일 때 발생시킵니다.
+    INVALID_MENU_PRICE("M005", HttpStatus.BAD_REQUEST, "메뉴 가격은 음수일 수 없습니다.");
+  
     private final String code;
     private final HttpStatus status;
     private final String message;
