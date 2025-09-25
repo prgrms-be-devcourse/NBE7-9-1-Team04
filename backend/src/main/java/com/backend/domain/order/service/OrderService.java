@@ -2,20 +2,19 @@ package com.backend.domain.order.service;
 
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
-import com.backend.domain.order.controller.OrderController;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderDetailsCreateRequest;
+import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
+import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
-import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.domain.user.user.service.UserService;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,10 +34,11 @@ public class OrderService {
     private final UserService usersService;
 
     @Transactional
-    public Orders createOrder(@Valid OrderCreateRequest request) throws Exception {
-        // 1. 유저 확인 (Users 엔티티 직접 조회)
-        Users user = (usersRepository.getUsersByEmail(request.email())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER)));
+    public Orders createOrder(Users actor, OrderCreateRequest request) throws Exception {
+        // 1. 유저가 존재하는지 검증
+        Users user = usersRepository.findById(actor.getUserId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
         // 2. 주문 항목 처리
         List<OrderDetails> orderDetails = new ArrayList<>();
         int calculatedTotal = 0;
@@ -74,8 +74,6 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
-
-
 
     @Transactional
     public void updateOrderStatus(Long orderId, String status) {
@@ -115,7 +113,34 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
-    public List<Orders> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUserUserId(userId);
+    // 사용자 ID로 주문 목록 조회
+    @Transactional(readOnly = true)
+    public List<OrderSummaryResponse> getOrdersByUserId(Long userId) {
+        // 1. 사용자 존재 확인
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // 2. 주문 목록 조회
+        List<Orders> orders = orderRepository.findByUser_UserId(userId);
+
+        if (orders.isEmpty()) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ORDER);
+        }
+
+        return orders.stream()
+                .map(order -> new OrderSummaryResponse(
+                        order.getOrderId(),
+                        order.getCreateDate(),
+                        order.getOrderAmount(),
+                        order.getOrderStatus().name(),
+                        order.getOrderDetails().stream()
+                                .map(detail -> new OrderSummaryDetailResponse(
+                                        detail.getMenu().getName(),
+                                        detail.getQuantity(),
+                                        detail.getOrderPrice()
+                                ))
+                                .toList()
+                ))
+                .toList();
     }
 }
