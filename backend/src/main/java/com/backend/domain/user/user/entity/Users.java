@@ -40,6 +40,11 @@ public class Users extends BaseEntity {
         return newApiKey;
     }
 
+    public Users changePhoneNumber(String newNumber) throws Exception {
+        this.phoneNumber = newNumber;
+        return this;
+    }
+
     public boolean isMatchedPassword(String password) {
         return this.password.equals(password);
     }

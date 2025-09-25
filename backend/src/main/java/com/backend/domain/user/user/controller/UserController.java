@@ -6,6 +6,7 @@ import com.backend.domain.user.user.service.UserService;
 import com.backend.global.response.ApiResponse;
 
 
+import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
@@ -30,6 +31,7 @@ public class UserController {
 
     private final UserService userService;
     private final HttpServletResponse  httpServletResponse;
+    private final Rq rq;
 
     record UserJoinReqBody(
             @Email(message = "이메일 양식을 지켜서 입력해주세요.")
@@ -112,7 +114,7 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    @Operation(summary = "회원 로그아웃", description = "현재 로그인 된 회원의 정보를 클라이언트에서 제거 하여 로그아웃 시킵니다.")
+    @Operation(summary = "회원 로그아웃", description = "현재 로그인 된 회원의 정보를 클라이언트에서 제거하여 로그아웃 시킵니다.")
     public ResponseEntity<ApiResponse> logout(){
         Cookie cookie = new Cookie("apiKey", null);
         cookie.setMaxAge(0);
@@ -120,6 +122,45 @@ public class UserController {
         cookie.setHttpOnly(true);
         httpServletResponse.addCookie(cookie);
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "회원 정보 조회", description = "현재 로그인된 회원의 정보를 조회합니다.")
+    public ResponseEntity<ApiResponse<UserDto>> my() throws Exception {
+        String apiKey= rq.getCookieValue("apiKey", "");
+        UserDto userDto = userService.getUserByApiKey(apiKey);
+
+        return new ResponseEntity<>(ApiResponse.success(userDto), HttpStatus.OK);
+    }
+
+    record UserModifyReqBody(
+            @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호 양식을 지켜주세요.")
+            String phoneNumber
+    ){}
+
+    @PutMapping("/modify")
+    @Operation(summary = "회원 정보 수정", description = "현재 로그인 된 회원의 정보를 수정합니다.")
+    public ResponseEntity<ApiResponse<UserDto>> modify(
+            @Valid @RequestBody UserModifyReqBody reqBody,
+            BindingResult bindingResult
+    ) throws Exception {
+        if(bindingResult.hasErrors()){
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            StringBuilder errorMessageBuilder = new StringBuilder();
+            for(FieldError error : errors){
+                errorMessageBuilder.append(error.getDefaultMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(
+                    "400",
+                    errorMessageBuilder.toString(),
+                    null
+            ));
+        }
+        // 바꿀 정보라곤 전화번호 뿐이라 일단 이거라도 바꿉니다...
+        String apiKey= rq.getCookieValue("apiKey", "");
+        UserDto userDto = userService.modifyPhoneNumber(reqBody.phoneNumber, apiKey);
+        return ResponseEntity.ok(ApiResponse.success(userDto));
     }
 
 }
