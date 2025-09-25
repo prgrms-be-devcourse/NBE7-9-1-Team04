@@ -87,4 +87,15 @@ public class UserService {
         return optionalUsers.get();
     }
 
+    public boolean isApiKeyExists(String apiKey) throws Exception {
+        if(apiKey.isBlank()){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ACCESS);
+        }
+        Optional<Users> optionalUsers = userRepository.getUserByApiKey(apiKey);
+        if(!optionalUsers.isPresent()){
+            throw new BusinessException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+        return true;
+    }
+
 }
