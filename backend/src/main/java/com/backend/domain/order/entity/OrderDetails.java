@@ -1,9 +1,12 @@
 package com.backend.domain.order.entity;
 
+import com.backend.domain.menu.entity.Menu;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 주문 상세 테이블 (OrderDetails)
@@ -11,8 +14,9 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Getter
+@Setter
 @Table(name = "order_details")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class OrderDetails {
 
     @Id
@@ -23,9 +27,8 @@ public class OrderDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     private Orders order;
 
-    // Menu 엔티티와의 관계 (다대일) - 메뉴 도메인이 만들어지면 연결
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Menu menu;
+    @ManyToOne
+    private Menu menu;
 
     @Column(nullable = false)
     private int quantity;
@@ -35,4 +38,11 @@ public class OrderDetails {
 
     @Column(length = 100, nullable = false)
     private String menuName;
+
+    public OrderDetails(Menu menu, int quantity, int orderPrice , String menuName) {
+        this.menu = menu;
+        this.quantity = quantity;
+        this.orderPrice = orderPrice;
+        this.menuName = menuName;
+    }
 }

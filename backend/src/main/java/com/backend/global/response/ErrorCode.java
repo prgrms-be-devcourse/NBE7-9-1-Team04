@@ -24,6 +24,22 @@ public enum ErrorCode {
     // 장바구니가 비어있는 상태에서 주문 시도할 때 발생시킵니다.
     EMPTY_CART("C006", HttpStatus.NOT_FOUND, "장바구니가 비어 있습니다."),
 
+    //주문
+    // 주문에 포함된 상품 중 하나라도 품절된 경우 발생시킵니다.
+    SOLD_OUT_PRODUCT("O001", HttpStatus.CONFLICT, "품절된 상품이 포함되어 있습니다."),
+    // 주문 가격이 예상 가격과 일치하지 않을 때 발생시킵니다.
+    INVALID_ORDER_PRICE("O002", HttpStatus.BAD_REQUEST, "주문 가격이 올바르지 않습니다."),
+    // 주문 총액이 예상 총액과 일치하지 않을 때 발생시킵니다.
+    INVALID_ORDER_AMOUNT("O003", HttpStatus.BAD_REQUEST, "주문 총액이 올바르지 않습니다."),
+    // 주문 ID가 DB에 존재하지 않을 때 사용합니다.
+    NOT_FOUND_ORDER("O004", HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
+    // 주문 상태 변경이 불가능한 경우 발생시킵니다.
+    INVALID_ORDER_STATUS("O005", HttpStatus.BAD_REQUEST, "알맞는 상태를 입력해주세요."),
+    // 주문 상태 변경이 논리적으로 불가능한 경우 발생시킵니다.
+    INVALID_STATUS_TRANSITION("O006", HttpStatus.BAD_REQUEST, "주문 상태 변경이 논리적으로 불가능합니다."),
+    // 조회 기간이 31일을 초과할 때 발생시킵니다.
+    INVALID_ORDER_PROCESSING_TIME("O007", HttpStatus.BAD_REQUEST, "주문 상태는 매일 오후 2시에 일괄 처리됩니다.");
+
     // 결제
     // 결제 금액이 0원 이하이거나 음수일 때 발생시킵니다.
     PAYMENT_AMOUNT_INVALID("P001", HttpStatus.BAD_REQUEST, "결제 금액이 유효하지 않습니다."),
@@ -35,7 +51,7 @@ public enum ErrorCode {
     NOT_FOUND_PAYMENT("P004", HttpStatus.NOT_FOUND, "존재하지 않는 결제입니다."),
     // 취소된 결제에 대해 완료 처리나 재시도를 할 때 발생시킵니다.
     PAYMENT_CANCELLED("P005", HttpStatus.CONFLICT, "취소된 결제입니다.");
-
+  
     private final String code;
     private final HttpStatus status;
     private final String message;
