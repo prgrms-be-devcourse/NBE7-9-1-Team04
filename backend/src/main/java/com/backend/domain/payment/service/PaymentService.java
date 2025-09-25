@@ -4,6 +4,7 @@ import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
 import com.backend.domain.payment.dto.request.PaymentCreateRequest;
+import com.backend.domain.payment.dto.response.PaymentCancelResponse;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
 import com.backend.domain.payment.dto.response.PaymentInquiryResponse;
 import com.backend.domain.payment.entity.Payment;
@@ -12,6 +13,7 @@ import com.backend.domain.payment.entity.PaymentStatus;
 import com.backend.domain.payment.repository.PaymentRepository;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -65,5 +67,28 @@ public class PaymentService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
         return new PaymentInquiryResponse(payment);
+    }
+
+    // 결제 단건 취소
+    @Transactional
+    public PaymentCancelResponse cancelPayment(@Valid Long paymentId) {
+        if(paymentId == null || paymentId <= 0) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
+        }
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+
+        if(payment.getPaymentStatus() == PaymentStatus.CANCELLED) {
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
+        }
+
+        if(payment.getPaymentStatus() != PaymentStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.PAYMENT_NOT_CANCELLABLE);
+        }
+
+        payment.cancel();
+
+        return new PaymentCancelResponse(payment);
     }
 }
