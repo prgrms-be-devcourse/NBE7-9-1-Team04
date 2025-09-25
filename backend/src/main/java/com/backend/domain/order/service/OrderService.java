@@ -1,5 +1,6 @@
 package com.backend.domain.order.service;
 
+import com.backend.domain.cart.service.CartService;
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
@@ -32,10 +33,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository usersRepository;
     private final MenuRepository menuRepository;
+    private final CartService cartService;
 
     @Transactional
     public Orders createOrder(UserDto actor, OrderCreateRequest request) throws Exception {
-        // 1. 유저가 존재하는지 검증
+        // 1. 사용자 존재 확인
         Users user = usersRepository.findById(actor.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -72,8 +74,13 @@ public class OrderService {
         Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED);
         order.addOrderDetails(orderDetails);
 
-        // 5. 장바구니 삭제 구현 예정
+        // 5. 장바구니에서 해당 아이템들 삭제
+        List<Long> orderedMenuIds = orderDetails.stream()
+                .map(d -> d.getMenu().getMenuId())
+                .toList();
+        cartService.deleteOrderedItems(actor, orderedMenuIds);
 
+        // 6. 주문 저장
         return orderRepository.save(order);
     }
 
@@ -150,7 +157,7 @@ public class OrderService {
 
         // 2. 주문이 해당 유저의 것인지 확인
         if (!order.getUser().getUserId().equals(actor.userId())) {
-            throw new BusinessException(ErrorCode.BAD_CREDENTIAL);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         // 3. 주문 상태가 CREATED 또는 PAID인지 확인
@@ -181,7 +188,7 @@ public class OrderService {
 
         // 2. 주문이 해당 유저의 것인지 확인
         if (!order.getUser().getUserId().equals(actor.userId())) {
-            throw new BusinessException(ErrorCode.BAD_CREDENTIAL);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         // 3. 주문 상태가 CANCELED인지 확인
