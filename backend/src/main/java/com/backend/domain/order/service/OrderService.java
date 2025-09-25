@@ -11,6 +11,9 @@ import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
+import com.backend.domain.user.address.dto.AddressDto;
+import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.address.repository.AddressRepository;
 import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
@@ -33,6 +36,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository usersRepository;
     private final MenuRepository menuRepository;
+    private final AddressRepository addressRepository;
     private final CartService cartService;
 
     @Transactional
@@ -41,7 +45,11 @@ public class OrderService {
         Users user = usersRepository.findById(actor.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
-        // 2. 주문 항목 처리
+        // 2 주소 가져오기(이미 등록된 주소 중 하나)
+        Address address = addressRepository.findById(request.addressId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ADDRESS));
+
+        // 3. 주문 항목 처리
         List<OrderDetails> orderDetails = new ArrayList<>();
         int calculatedTotal = 0;
 
@@ -65,22 +73,22 @@ public class OrderService {
             orderDetails.add(detail);
         }
 
-        // 3. 금액 검증
+        // 4. 금액 검증
         if (calculatedTotal != request.amount()) {
             throw new BusinessException(ErrorCode.INVALID_ORDER_AMOUNT);
         }
 
-        // 4. 주문 엔티티 생성 (Users 엔티티 사용)
-        Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED);
+        // 5. 주문 엔티티 생성 (Users 엔티티 사용)
+        Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED, address);
         order.addOrderDetails(orderDetails);
 
-        // 5. 장바구니에서 해당 아이템들 삭제
+        // 6. 장바구니에서 해당 아이템들 삭제
         List<Long> orderedMenuIds = orderDetails.stream()
                 .map(d -> d.getMenu().getMenuId())
                 .toList();
         cartService.deleteOrderedItems(actor, orderedMenuIds);
 
-        // 6. 주문 저장
+        // 7. 주문 저장
         return orderRepository.save(order);
     }
 
@@ -131,20 +139,28 @@ public class OrderService {
         }
 
         return orders.stream()
-                .map(order -> new OrderSummaryResponse(
-                        order.getOrderId(),
-                        order.getCreateDate(),
-                        order.getOrderAmount(),
-                        order.getOrderStatus().name(),
-                        order.getAddress() != null ? order.getAddress().toString() : null,
-                        order.getOrderDetails().stream()
-                                .map(detail -> new OrderSummaryDetailResponse(
-                                        detail.getMenu().getName(),
-                                        detail.getQuantity(),
-                                        detail.getOrderPrice()
-                                ))
-                                .toList()
-                ))
+                .map(order -> {
+                    AddressDto addressDto = order.getAddress() != null
+                            ? new AddressDto(order.getAddress())
+                            : null;
+
+                    return new OrderSummaryResponse(
+                            order.getOrderId(),
+                            order.getCreateDate(),
+                            order.getOrderAmount(),
+                            order.getOrderStatus().name(),
+                            addressDto != null
+                                    ? addressDto.address() + " " + addressDto.addressDetail()
+                                    : null,
+                            order.getOrderDetails().stream()
+                                    .map(detail -> new OrderSummaryDetailResponse(
+                                            detail.getMenu().getName(),
+                                            detail.getQuantity(),
+                                            detail.getOrderPrice()
+                                    ))
+                                    .toList()
+                    );
+                })
                 .toList();
     }
 

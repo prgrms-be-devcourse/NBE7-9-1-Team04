@@ -16,7 +16,7 @@ public record OrderDetailsCreateResponse(
     public OrderDetailsCreateResponse(OrderDetails details) {
         this(
                 details.getOrderItemId(),
-                details.getMenu().getMenuId(), // Menu 엔티티에 getMenuId()가 있다고 가정
+                details.getMenu().getMenuId(),
                 details.getMenuName(),
                 details.getQuantity(),
                 details.getOrderPrice()

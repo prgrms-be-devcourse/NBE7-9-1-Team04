@@ -40,24 +40,9 @@ public class OrderController {
     ) throws Exception {
 
         UserDto actor = rq.getUser();
-        Orders order = orderService.createOrder(actor, request);
+        Orders order = orderService.createOrder(actor,request);
 
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
-    }
-
-    @PutMapping("/{orderId}/status")
-    @Transactional
-    @Operation(summary = "주문 상태 업데이트", description = "주문의 상태를 업데이트합니다. (예: PAID, COMPLETED 등)")
-    public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody @Valid OrderStatusUpdateRequest reqBody
-    ) {
-        // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
-        orderService.updateOrderStatus(orderId, reqBody.newStatus());
-
-        // 업데이트된 주문 정보 반환
-        Optional<Orders> updatedOrder = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
     }
 
     @GetMapping
