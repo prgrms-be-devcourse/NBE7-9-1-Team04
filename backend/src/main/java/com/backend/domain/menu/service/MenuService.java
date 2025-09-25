@@ -87,10 +87,19 @@ public class MenuService {
         return MenuResponse.from(menuRepository.save(menu));
     }
 
+    // 메뉴 상세 조회 (관리자)
     public MenuResponse getMenuById(Long menuId) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
         return MenuResponse.from(menu);
+    }
+
+    // 메뉴 삭제 (관리자)
+    public void deleteMenu(Long menuId) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        menuRepository.delete(menu);
     }
 }
