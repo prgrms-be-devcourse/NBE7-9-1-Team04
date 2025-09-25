@@ -1,7 +1,7 @@
 package com.backend.domain.user.address.dto;
 
 import com.backend.domain.user.address.entity.Address;
-import com.backend.domain.user.address.request.AddressReqBody;
+import com.backend.domain.user.address.dto.request.AddressReqBody;
 
 public record AddressDto(
         Long addressId,

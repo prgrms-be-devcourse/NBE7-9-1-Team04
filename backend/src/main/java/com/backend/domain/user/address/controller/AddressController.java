@@ -1,7 +1,7 @@
 package com.backend.domain.user.address.controller;
 
 import com.backend.domain.user.address.dto.AddressDto;
-import com.backend.domain.user.address.request.AddressReqBody;
+import com.backend.domain.user.address.dto.request.AddressReqBody;
 import com.backend.domain.user.address.service.AddressService;
 import com.backend.domain.user.user.dto.UserDto;
 import com.backend.global.response.ApiResponse;

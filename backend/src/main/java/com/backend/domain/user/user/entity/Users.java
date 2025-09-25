@@ -21,13 +21,18 @@ public class Users extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
     @Column(unique = true, nullable = false, length = 100)
     private String email;
+
     @Column(length = 20, nullable = false)
     private String password;
+
     @Column(length = 15, nullable = false)
     private String phoneNumber;
+
     private int level;
+
     private String apiKey;
 
     @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE} , orphanRemoval = true)
