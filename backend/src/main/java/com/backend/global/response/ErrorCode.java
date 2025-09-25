@@ -40,7 +40,18 @@ public enum ErrorCode {
     // 조회 기간이 31일을 초과할 때 발생시킵니다.
     INVALID_ORDER_PROCESSING_TIME("O007", HttpStatus.BAD_REQUEST, "주문 상태는 매일 오후 2시에 일괄 처리됩니다.");
 
-
+    // 결제
+    // 결제 금액이 0원 이하이거나 음수일 때 발생시킵니다.
+    PAYMENT_AMOUNT_INVALID("P001", HttpStatus.BAD_REQUEST, "결제 금액이 유효하지 않습니다."),
+    // 이미 완료된 결제에 대해 다시 결제 처리를 시도할 때 발생시킵니다.
+    PAYMENT_ALREADY_COMPLETED("P002", HttpStatus.CONFLICT, "이미 완료된 결제입니다."),
+    // 카드 한도 초과, 잔액 부족 등으로 결제가 실패했을 때 발생시킵니다.
+    PAYMENT_FAILED("P003", HttpStatus.PAYMENT_REQUIRED, "결제 처리에 실패했습니다."),
+    // 존재하지 않는 결제 ID로 조회하거나 처리를 시도할 때 발생시킵니다.
+    NOT_FOUND_PAYMENT("P004", HttpStatus.NOT_FOUND, "존재하지 않는 결제입니다."),
+    // 취소된 결제에 대해 완료 처리나 재시도를 할 때 발생시킵니다.
+    PAYMENT_CANCELLED("P005", HttpStatus.CONFLICT, "취소된 결제입니다.");
+  
     private final String code;
     private final HttpStatus status;
     private final String message;
