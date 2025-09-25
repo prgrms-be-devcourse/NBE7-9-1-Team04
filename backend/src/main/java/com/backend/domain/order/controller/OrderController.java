@@ -10,6 +10,7 @@ import com.backend.domain.order.service.OrderService;
 import com.backend.domain.user.address.entity.Address;
 import com.backend.domain.user.address.repository.AddressRepository;
 import com.backend.domain.user.address.service.AddressService;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.service.UserService;
 import com.backend.global.response.ApiResponse;
@@ -43,7 +44,7 @@ public class OrderController {
             @Valid @RequestBody OrderCreateRequest request
     ) throws Exception {
 
-        Users actor = rq.getUser();
+        UserDto actor = rq.getUser();
         Orders order = orderService.createOrder(actor, request);
 
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
@@ -66,12 +67,12 @@ public class OrderController {
 
     @GetMapping
     @Operation(summary = "사용자 주문 목록 조회")
-    public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders() {
+    public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders() throws Exception {
         //쿠키에서 인증된 유저 가져오기
-        Users actor = rq.getUser();
+        UserDto actor = rq.getUser();
 
         //주문 조회 로직
-        List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.getUserId());
+        List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.userId());
         return ResponseEntity.ok(ApiResponse.success(summaries));
     }
 }

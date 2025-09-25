@@ -4,13 +4,13 @@ import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderDetailsCreateRequest;
-import com.backend.domain.order.dto.response.AdminOrderSummaryResponse;
 import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
 import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.domain.user.user.service.UserService;
@@ -35,9 +35,9 @@ public class OrderService {
     private final UserService usersService;
 
     @Transactional
-    public Orders createOrder(Users actor, OrderCreateRequest request) throws Exception {
+    public Orders createOrder(UserDto actor, OrderCreateRequest request) throws Exception {
         // 1. 유저가 존재하는지 검증
-        Users user = usersRepository.findById(actor.getUserId())
+        Users user = usersRepository.findById(actor.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 2. 주문 항목 처리
