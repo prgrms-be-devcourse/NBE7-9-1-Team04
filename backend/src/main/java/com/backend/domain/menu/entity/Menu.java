@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,6 +35,8 @@ public class Menu extends BaseEntity {
     @Column(length = 255)
     private String imageUrl;    // 메뉴 이미지 URL
 
+    // 생성자
+    @Builder
     public Menu(String name, int price, Boolean isSoldOut, String description, String imageUrl) {
         this.name = name;
         this.price = price;
@@ -42,6 +45,7 @@ public class Menu extends BaseEntity {
         this.imageUrl = imageUrl;
     }
 
+    // 메뉴 정보 업데이트 메서드
     public void updateMenu(String name, int price,  Boolean isSoldOut, String description, String imageUrl) {
         this.name = name;
         this.price = price;

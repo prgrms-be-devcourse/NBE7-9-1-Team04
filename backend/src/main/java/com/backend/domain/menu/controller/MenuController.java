@@ -4,8 +4,12 @@ import com.backend.domain.menu.dto.MenuAddRequest;
 import com.backend.domain.menu.dto.MenuResponse;
 import com.backend.domain.menu.dto.MenuUpdateRequest;
 import com.backend.domain.menu.service.MenuService;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.service.UserService;
+import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ApiResponse;
+import com.backend.global.response.ErrorCode;
+import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,7 +25,15 @@ import java.util.List;
 public class MenuController {
 
     private final MenuService menuService;
-    private final UserService userService;
+    private final Rq rq;
+
+    private void validateAdmin(UserDto actor)
+    {
+        if(actor.level() != 1)          //아직 관리자 레벨을 정하지 않아 임시로 1로 지정
+        {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
+        }
+    }
 
     // =========== 사용자 ============
 
@@ -37,7 +49,10 @@ public class MenuController {
     @PostMapping("/api/admin/menu")
     @Operation(summary = "메뉴 생성", description = "새로운 메뉴를 생성합니다. (관리자 전용)")
     public ResponseEntity<ApiResponse<MenuResponse>> createMenu(
-            @Valid @RequestBody MenuAddRequest request) {
+            @Valid @RequestBody MenuAddRequest request) throws Exception {
+        UserDto actor = rq.getUser();
+        validateAdmin(actor);
+
         // TODO: 메뉴 생성 로직 구현
         MenuResponse response = menuService.createMenu(request);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -45,7 +60,9 @@ public class MenuController {
 
     @GetMapping("/api/admin/menu")
     @Operation(summary = "메뉴 조회 (관리자)", description = "품절 여부와 상관없이 전체 메뉴를 조회합니다.")
-    public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenusForAdmin() {
+    public ResponseEntity<ApiResponse<List<MenuResponse>>> getAllMenusForAdmin() throws Exception {
+        UserDto actor = rq.getUser();
+        validateAdmin(actor);
         // TODO: 메뉴 조회 로직 구현
         return ResponseEntity.ok(menuService.getAllMenuForAdmin());
     }
@@ -54,7 +71,9 @@ public class MenuController {
     @Operation(summary = "메뉴 상세 조회 (관리자)", description = "특정 메뉴의 상세 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<MenuResponse>> getMenuById(
             @PathVariable Long menuId
-    ) {
+    ) throws Exception {
+        UserDto actor = rq.getUser();
+        validateAdmin(actor);
         // TODO: 메뉴 상세 조회 로직 구현
         MenuResponse response = menuService.getMenuById(menuId);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -65,7 +84,9 @@ public class MenuController {
     public ResponseEntity<ApiResponse<MenuResponse>> updateMenu(
             @PathVariable Long menuId,
             @Valid @RequestBody MenuUpdateRequest request
-    ) {
+    ) throws Exception {
+        UserDto actor = rq.getUser();
+        validateAdmin(actor);
         // TODO: 메뉴 수정 로직 구현
         MenuResponse response = menuService.updateMenu(menuId, request);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -75,7 +96,9 @@ public class MenuController {
     @Operation(summary = "메뉴 삭제", description = "관리자가 특정 메뉴를 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteMenu(
             @PathVariable Long menuId
-    ) {
+    ) throws Exception {
+        UserDto actor = rq.getUser();
+        validateAdmin(actor);
         // TODO: 메뉴 삭제 로직 구현
         menuService.deleteMenu(menuId);
         return ResponseEntity.ok(ApiResponse.success(null));

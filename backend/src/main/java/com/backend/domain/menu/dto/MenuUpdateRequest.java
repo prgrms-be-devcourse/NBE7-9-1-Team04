@@ -1,5 +1,6 @@
 package com.backend.domain.menu.dto;
 
+import com.backend.domain.menu.entity.Menu;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -26,4 +27,14 @@ public record MenuUpdateRequest(
         )
         String imageUrl
 ) {
+    // 메뉴 엔티티에 업데이트 적용 메서드
+    public void applyTo(Menu menu) {
+        menu.updateMenu(
+                this.name,
+                this.price,
+                this.isSoldOut,
+                this.description,
+                this.imageUrl
+        );
+    }
 }

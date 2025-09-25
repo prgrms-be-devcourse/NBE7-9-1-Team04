@@ -1,5 +1,6 @@
 package com.backend.domain.order.service;
 
+import com.backend.domain.cart.service.CartService;
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
@@ -32,11 +33,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository usersRepository;
     private final MenuRepository menuRepository;
-    private final UserService usersService;
+    private final CartService cartService;
 
     @Transactional
     public Orders createOrder(UserDto actor, OrderCreateRequest request) throws Exception {
-        // 1. 유저가 존재하는지 검증
+        // 1. 사용자 존재 확인
         Users user = usersRepository.findById(actor.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -73,6 +74,13 @@ public class OrderService {
         Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED);
         order.addOrderDetails(orderDetails);
 
+        // 5. 장바구니에서 해당 아이템들 삭제
+        List<Long> orderedMenuIds = orderDetails.stream()
+                .map(d -> d.getMenu().getMenuId())
+                .toList();
+        cartService.deleteOrderedItems(actor, orderedMenuIds);
+
+        // 6. 주문 저장
         return orderRepository.save(order);
     }
 
@@ -96,13 +104,10 @@ public class OrderService {
         }
 
         // 4. 시간 검증
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = now.toLocalDate();
-        LocalDateTime yesterday2pm = today.minusDays(1).atTime(14, 0);
-        LocalDateTime today2pm = today.atTime(14, 0);
-
         LocalDateTime createdAt = order.getCreateDate();
-        if (createdAt.isBefore(yesterday2pm) || createdAt.isAfter(today2pm)) {
+        LocalDateTime cancelDeadline = createdAt.toLocalDate().plusDays(1).atTime(14, 0);
+
+        if (LocalDateTime.now().isAfter(cancelDeadline)) {
             throw new BusinessException(ErrorCode.INVALID_ORDER_PROCESSING_TIME);
         }
 
@@ -117,11 +122,8 @@ public class OrderService {
     // 사용자 ID로 주문 목록 조회
     @Transactional(readOnly = true)
     public List<OrderSummaryResponse> getOrdersByUserId(Long userId) {
-        // 1. 사용자 존재 확인
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
-        // 2. 주문 목록 조회
+        // 1. 주문 목록 조회
         List<Orders> orders = orderRepository.findByUser_UserId(userId);
 
         if (orders.isEmpty()) {
@@ -144,5 +146,57 @@ public class OrderService {
                                 .toList()
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public Orders cancelOrder(UserDto actor, Long orderId) {
+
+        // 1. 주문 존재 확인
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
+
+        // 2. 주문이 해당 유저의 것인지 확인
+        if (!order.getUser().getUserId().equals(actor.userId())) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
+
+        // 3. 주문 상태가 CREATED 또는 PAID인지 확인
+        if (order.getOrderStatus() != OrderStatus.CREATED &&
+                order.getOrderStatus() != OrderStatus.PAID) {
+            throw new BusinessException(ErrorCode.INVALID_STATUS_TRANSITION);
+        }
+
+        // 4. 시간 검증
+        LocalDateTime createdAt = order.getCreateDate();
+        LocalDateTime cancelDeadline = createdAt.toLocalDate().plusDays(1).atTime(14, 0);
+
+        if (LocalDateTime.now().isAfter(cancelDeadline)) {
+            throw new BusinessException(ErrorCode.INVALID_ORDER_PROCESSING_TIME);
+        }
+
+        // 5. 주문 상태를 CANCELED로 변경
+        order.setOrderStatus(OrderStatus.CANCELED);
+
+        return order;
+    }
+
+    @Transactional
+    public void deleteOrder(UserDto actor, Long orderId) {
+        // 1. 주문 존재 확인
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
+
+        // 2. 주문이 해당 유저의 것인지 확인
+        if (!order.getUser().getUserId().equals(actor.userId())) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
+
+        // 3. 주문 상태가 CANCELED인지 확인
+        if (order.getOrderStatus() != OrderStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.INVALID_STATUS_TRANSITION);
+        }
+
+        // 4. 주문 삭제
+        orderRepository.delete(order);
     }
 }

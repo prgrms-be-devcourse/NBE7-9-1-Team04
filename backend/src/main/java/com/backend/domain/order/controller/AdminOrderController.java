@@ -29,10 +29,12 @@ public class AdminOrderController {
     private final Rq rq;
 
     @GetMapping
-    @Operation(summary = "관리자 주문 목록 조회")
+    @Operation(summary = "관리자 주문 목록 조회", description = "모든 주문 목록을 조회합니다. (관리자 전용)")
     public ResponseEntity<ApiResponse<List<AdminOrderSummaryResponse>>> getOrders() throws Exception {
         //쿠키에서 인증된 유저 가져오기
         UserDto actor = rq.getUser();
+
+        //관리자 인증 로직 구현 예정
 
         // 전체 주문 조회
         List<AdminOrderSummaryResponse> summaries = adminOrderService.getAllOrdersForAdmin();
