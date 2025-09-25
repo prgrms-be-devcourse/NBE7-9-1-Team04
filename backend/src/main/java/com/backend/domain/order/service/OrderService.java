@@ -4,6 +4,7 @@ import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderDetailsCreateRequest;
+import com.backend.domain.order.dto.response.AdminOrderSummaryResponse;
 import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
 import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.OrderDetails;
@@ -133,6 +134,7 @@ public class OrderService {
                         order.getCreateDate(),
                         order.getOrderAmount(),
                         order.getOrderStatus().name(),
+                        order.getAddress() != null ? order.getAddress().toString() : null,
                         order.getOrderDetails().stream()
                                 .map(detail -> new OrderSummaryDetailResponse(
                                         detail.getMenu().getName(),
