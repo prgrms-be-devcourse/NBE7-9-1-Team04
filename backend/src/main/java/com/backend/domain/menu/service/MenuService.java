@@ -36,24 +36,12 @@ public class MenuService {
     // 메뉴 생성 (관리자)
     public MenuResponse createMenu(MenuAddRequest request) {
 
-        // 관리자 권한 체크
-//        if (user.getLevel() != 1) { // 예: 1 = 관리자
-//            throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
-//        }
-
         // 메뉴 이름 중복 체크
         if (menuRepository.existsByName(request.name())) {
             throw new BusinessException(ErrorCode.DUPLICATE_MENU_NAME);
         }
 
-        Menu menu = new Menu(
-                request.name(),
-                request.price(),
-                request.isSoldOut(),
-                request.description(),
-                request.imageUrl()
-        );
-
+        Menu menu = request.toEntity();
         return MenuResponse.from(menuRepository.save(menu));
     }
 
@@ -76,14 +64,7 @@ public class MenuService {
             throw new BusinessException(ErrorCode.DUPLICATE_MENU_NAME);
         }
 
-        menu.updateMenu(
-                request.name(),
-                request.price(),
-                request.isSoldOut(),
-                request.description(),
-                request.imageUrl()
-        );
-
+        request.applyTo(menu); // DTO → 엔티티 갱신
         return MenuResponse.from(menuRepository.save(menu));
     }
 
