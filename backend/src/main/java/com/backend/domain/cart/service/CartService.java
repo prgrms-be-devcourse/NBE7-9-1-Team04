@@ -8,6 +8,7 @@ import com.backend.domain.cart.entity.Cart;
 import com.backend.domain.cart.repository.CartRepository;
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.global.exception.BusinessException;
@@ -27,34 +28,28 @@ public class CartService {
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
 
-    private static final Long TEST_USER_ID = 1L; // 임시 사용자
-
     @Transactional
-    public CartResponse addCartItem(CartAddRequest request) {
+    public CartResponse addCartItem(UserDto userDto, CartAddRequest request) {
 
-        Users testUser = userRepository.findById(TEST_USER_ID)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+        Users user = userRepository.findById(userDto.userId()).get();
 
         Menu menu = menuRepository.findById(request.getMenuId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
-        Cart cartItem = cartRepository.findByUserAndMenu(testUser, menu)
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId()) // menu.getId()도 menu.getMenuId()로 바뀌었을 수 있습니다.
                 .orElse(null);
 
         if (cartItem != null) {
             cartItem.updateQuantity(cartItem.getQuantity() + request.getQuantity());
         } else {
-            cartItem = request.toEntity(testUser, menu);
+            cartItem = request.toEntity(user, menu);
             cartRepository.save(cartItem);
         }
         return CartResponse.from(cartItem);
     }
 
     @Transactional
-    public CartResponse updateCartItemQuantity(Long menuId, CartUpdateRequest request) {
-        Users testUser = userRepository.findById(TEST_USER_ID)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-
+    public CartResponse updateCartItemQuantity(UserDto userDto, Long menuId, CartUpdateRequest request) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
@@ -62,35 +57,29 @@ public class CartService {
             throw new BusinessException(ErrorCode.INVALID_QUANTITY);
         }
 
-        Cart cartItem = cartRepository.findByUserAndMenu(testUser, menu)
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
         cartItem.updateQuantity(request.getQuantity());
 
         return CartResponse.from(cartItem);
-
     }
 
     @Transactional
-    public void deleteCartItem(Long menuId) {
-        Users testUser = userRepository.findById(TEST_USER_ID)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-
+    public void deleteCartItem(UserDto userDto, Long menuId) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
-        Cart cartItem = cartRepository.findByUserAndMenu(testUser, menu)
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
         cartRepository.delete(cartItem);
     }
 
     @Transactional(readOnly = true)
-    public CartListResponse getCart() {
-        Users user = userRepository.findById(TEST_USER_ID)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+    public CartListResponse getCart(UserDto userDto) {
 
-        List<Cart> cartItems = cartRepository.findByUser(user);
+        List<Cart> cartItems = cartRepository.findByUser_UserId(userDto.userId());
 
         List<CartResponse> cartResponses = cartItems.stream()
                 .map(CartResponse::from)
@@ -100,10 +89,7 @@ public class CartService {
     }
 
     @Transactional
-    public void clearCart() {
-        Users user = userRepository.findById(TEST_USER_ID)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-
-        cartRepository.deleteAllByUser(user);
+    public void clearCart(UserDto userDto) {
+        cartRepository.deleteAllByUser_UserId(userDto.userId());
     }
 }
