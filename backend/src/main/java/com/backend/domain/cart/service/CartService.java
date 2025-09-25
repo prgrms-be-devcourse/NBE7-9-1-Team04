@@ -36,7 +36,7 @@ public class CartService {
         Menu menu = menuRepository.findById(request.getMenuId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
-        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId()) // menu.getId()도 menu.getMenuId()로 바뀌었을 수 있습니다.
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId())
                 .orElse(null);
 
         if (cartItem != null) {
