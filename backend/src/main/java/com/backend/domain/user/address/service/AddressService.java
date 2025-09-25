@@ -72,4 +72,14 @@ public class AddressService {
         return new AddressDto(address);
     }
 
+    @Transactional
+    public void deleteAddress(Long addressId, UserDto userDto) {
+        Users user = userRepository.getUsersByUserId(userDto.userId()).get();
+        Optional<Address> optionalAddress = user.getAddress(addressId);
+        if (!optionalAddress.isPresent()) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ADDRESS);
+        }
+        Address address = optionalAddress.get();
+        user.deleteAddress(address);
+    }
 }

@@ -62,4 +62,14 @@ public class AddressController {
         AddressDto addressDto = addressService.updateAddress(new AddressDto(reqBody),addressId,userDto);
         return ResponseEntity.ok(ApiResponse.success(addressDto));
     }
+
+    @DeleteMapping("/delete/{addressId}")
+    @Operation(summary = "주소 삭제" , description = "사용자의 해당 주소를 삭제합니다.")
+    public ResponseEntity<ApiResponse> deleteAddress(
+            @PathVariable Long addressId
+    ) throws Exception {
+        UserDto userDto = rq.getUser();
+        addressService.deleteAddress(addressId, userDto);
+        return ResponseEntity.ok(ApiResponse.success());
+    }
 }

@@ -62,6 +62,10 @@ public class Users extends BaseEntity {
         return address;
     }
 
+    public void deleteAddress(Address address) {
+        this.addresses.remove(address);
+    }
+
     public boolean isMatchedPassword(String password) {
         return this.password.equals(password);
     }
