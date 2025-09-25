@@ -92,4 +92,14 @@ public class CartService {
     public void clearCart(UserDto userDto) {
         cartRepository.deleteAllByUser_UserId(userDto.userId());
     }
+
+    /**
+     * 주문 완료 시 장바구니에서 해당 메뉴 삭제
+     * parameter : 주문 완료된 munuId 리스트
+     */
+    @Transactional
+    public void deleteOrderedItems(UserDto userDto, List<Long> orderedMenuIds) {
+        List<Cart> cartItemsToDelete = cartRepository.findByUser_UserIdAndMenu_MenuIdIn(userDto.userId(), orderedMenuIds);
+        cartRepository.deleteAll(cartItemsToDelete);
+    }
 }
