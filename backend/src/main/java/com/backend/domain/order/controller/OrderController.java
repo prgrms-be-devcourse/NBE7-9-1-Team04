@@ -34,7 +34,7 @@ public class OrderController {
     @Operation(summary = "주문 생성")
     public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(
             @Valid @RequestBody OrderCreateRequest request
-    ) {
+    ) throws Exception {
         Orders order = orderService.createOrder(request);
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
     }
