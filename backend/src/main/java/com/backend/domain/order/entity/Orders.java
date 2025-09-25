@@ -2,6 +2,7 @@ package com.backend.domain.order.entity;
 
 import com.backend.domain.payment.entity.Payment;
 import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;

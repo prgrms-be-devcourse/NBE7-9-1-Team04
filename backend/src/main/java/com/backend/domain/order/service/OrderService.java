@@ -9,8 +9,10 @@ import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
+import com.backend.domain.user.user.service.UserService;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import jakarta.validation.Valid;
@@ -30,13 +32,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository usersRepository;
     private final MenuRepository menuRepository;
+    private final UserService usersService;
 
     @Transactional
-    public Orders createOrder(@Valid OrderCreateRequest request) {
-        // 1. 유저 확인
-        Users user = (Users) usersRepository.findByEmail(request.email())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-
+    public Orders createOrder(@Valid OrderCreateRequest request) throws Exception {
+        // 1. 유저 확인 (Users 엔티티 직접 조회)
+        Users user = (usersRepository.getUsersByEmail(request.email())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER)));
         // 2. 주문 항목 처리
         List<OrderDetails> orderDetails = new ArrayList<>();
         int calculatedTotal = 0;
@@ -66,12 +68,13 @@ public class OrderService {
             throw new BusinessException(ErrorCode.INVALID_ORDER_AMOUNT);
         }
 
-        // 4. 주문 엔티티 생성
+        // 4. 주문 엔티티 생성 (Users 엔티티 사용)
         Orders order = new Orders(user, calculatedTotal, OrderStatus.CREATED);
         order.addOrderDetails(orderDetails);
 
         return orderRepository.save(order);
     }
+
 
 
     @Transactional
