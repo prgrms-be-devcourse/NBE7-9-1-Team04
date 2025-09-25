@@ -2,17 +2,12 @@ package com.backend.domain.order.controller;
 
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
+import com.backend.domain.order.dto.response.OrderCancelResponse;
 import com.backend.domain.order.dto.response.OrderCreateResponse;
-import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
 import com.backend.domain.order.dto.response.OrderSummaryResponse;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
-import com.backend.domain.user.address.entity.Address;
-import com.backend.domain.user.address.repository.AddressRepository;
-import com.backend.domain.user.address.service.AddressService;
 import com.backend.domain.user.user.dto.UserDto;
-import com.backend.domain.user.user.entity.Users;
-import com.backend.domain.user.user.service.UserService;
 import com.backend.global.response.ApiResponse;
 import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,5 +68,23 @@ public class OrderController {
         //주문 조회 로직
         List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.userId());
         return ResponseEntity.ok(ApiResponse.success(summaries));
+    }
+
+    @PutMapping("/{orderId}/cancel")
+    @Operation(summary = "주문 취소")
+    public ResponseEntity<ApiResponse<OrderCancelResponse>> cancelOrder(
+            @PathVariable Long orderId
+    ) throws Exception {
+        UserDto actor = rq.getUser();
+        Orders order = orderService.cancelOrder(actor,orderId);
+
+        // 엔티티 -> DTO 변환
+        OrderCancelResponse response = new OrderCancelResponse(
+                order.getOrderId(),
+                "주문이 성공적으로 취소되었습니다.",
+                order.getOrderStatus().name()
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

@@ -7,8 +7,8 @@ package com.backend.domain.order.entity;
 public enum OrderStatus {
     CREATED, // 주문 생성,결제 전
     PAID, // 결제 완료
-    COMPLETED // 배송 완료
-    ;
+    COMPLETED, // 배송 완료
+    CANCELED;
 
     public boolean canTransitionTo(OrderStatus newStatus) {
         return switch (this) {
