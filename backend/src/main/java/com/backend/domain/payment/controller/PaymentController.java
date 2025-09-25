@@ -49,7 +49,7 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 결제 단건 삭제 API
+    // 결제 단건 취소 API
     @Operation(
             summary = "결제 취소",
             description = "완료(COMPLETED)된 결제를 취소(CANCELED) 상태로 변경합니다. " +
