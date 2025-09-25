@@ -35,8 +35,9 @@ public class OrderService {
 
     @Transactional
     public Orders createOrder(Users actor, OrderCreateRequest request) throws Exception {
-        // 1. 유저는 이미 Rq에서 검증
-        Users user = actor;
+        // 1. 유저가 존재하는지 검증
+        Users user = usersRepository.findById(actor.getUserId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
         // 2. 주문 항목 처리
         List<OrderDetails> orderDetails = new ArrayList<>();
