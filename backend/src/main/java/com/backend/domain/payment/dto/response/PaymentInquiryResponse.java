@@ -1,6 +1,7 @@
 package com.backend.domain.payment.dto.response;
 
 import com.backend.domain.payment.entity.Payment;
+import com.backend.domain.payment.entity.PaymentMethod;
 import com.backend.domain.payment.entity.PaymentStatus;
 
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 public record PaymentInquiryResponse(
         Long paymentId,
         int paymentAmount,
-        String paymentMethod,
+        PaymentMethod paymentMethod,
         PaymentStatus paymentStatus,
         LocalDateTime createDate,
         LocalDateTime modifyDate

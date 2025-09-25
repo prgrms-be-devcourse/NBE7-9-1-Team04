@@ -7,6 +7,7 @@ import com.backend.domain.payment.dto.request.PaymentCreateRequest;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
 import com.backend.domain.payment.dto.response.PaymentInquiryResponse;
 import com.backend.domain.payment.entity.Payment;
+import com.backend.domain.payment.entity.PaymentMethod;
 import com.backend.domain.payment.entity.PaymentStatus;
 import com.backend.domain.payment.repository.PaymentRepository;
 import com.backend.global.exception.BusinessException;
@@ -37,6 +38,14 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
+        if(request.paymentMethod() == null) {
+            throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
+        }
+
+        if(request.paymentMethod() == PaymentMethod.CARD) {
+            throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
+        }
+
         boolean completePayment = paymentRepository.existsByOrdersAndPaymentStatus(orders, PaymentStatus.COMPLETED);
         if(completePayment) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
@@ -44,9 +53,6 @@ public class PaymentService {
 
         Payment payment = request.createPayment(orders);
         Payment savePayment = paymentRepository.save(payment);
-
-        orders.setPayment(savePayment);
-        orderRepository.save(orders);
 
         orders.setPayment(savePayment);
         orders.setOrderStatus(OrderStatus.PAID);

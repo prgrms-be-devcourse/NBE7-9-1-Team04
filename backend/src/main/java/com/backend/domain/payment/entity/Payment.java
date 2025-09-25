@@ -22,8 +22,9 @@ public class Payment extends BaseEntity {
     private int paymentAmount;
 
     // 결제 유형, NOT NULL [ex: 카드 결제]
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
 
     // 결제 상태, NOT NULL [결제 전 / 결제 완료]
     @Enumerated(EnumType.STRING)
@@ -35,7 +36,7 @@ public class Payment extends BaseEntity {
     private Orders orders;
 
     @Builder
-    public Payment(int paymentAmount, String paymentMethod, Orders orders) {
+    public Payment(int paymentAmount, PaymentMethod  paymentMethod, Orders orders) {
         this.paymentAmount = paymentAmount;
         this.paymentMethod = paymentMethod;
         this.paymentStatus = PaymentStatus.PENDING;
