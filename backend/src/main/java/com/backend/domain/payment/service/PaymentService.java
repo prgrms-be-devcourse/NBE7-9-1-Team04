@@ -30,19 +30,11 @@ public class PaymentService {
         Orders orders = orderRepository.findById(request.orderId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
-        if(request.paymentAmount() <= 0) {
-            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_INVALID);
-        }
-
         if(orders.getOrderAmount() != request.paymentAmount()){
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
-        if(request.paymentMethod() == null) {
-            throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
-        }
-
-        if(request.paymentMethod() == PaymentMethod.CARD) {
+        if(request.paymentMethod() == null || request.paymentMethod() != PaymentMethod.CARD) {
             throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 
