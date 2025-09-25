@@ -1,9 +1,13 @@
 package com.backend.domain.order.entity;
 
+import com.backend.domain.payment.entity.Payment;
+import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.user.entity.Users;
+import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +18,10 @@ import java.util.List;
  */
 @Entity
 @Getter
+@Setter
 @Table(name = "orders")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Orders {
+@NoArgsConstructor
+public class Orders extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,15 +38,28 @@ public class Orders {
     @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderDetails> orderDetails = new ArrayList<>();
 
-//    // User 엔티티와의 관계 (다대일)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private User user;
+    // User 엔티티와의 관계 (다대일)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Users user;
 
-    // Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Address address;
+    //     Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Address address;
 
-    // Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
-    // @OneToOne(fetch = FetchType.LAZY)
-    // private Payment payment;
+    //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
+    @OneToOne(fetch = FetchType.LAZY)
+    private Payment paymentId;
+
+    public void addOrderDetails(List<OrderDetails> orderDetails) {
+        for (OrderDetails detail : orderDetails) {
+            this.orderDetails.add(detail);
+            detail.setOrder(this);
+        }
+    }
+
+    public Orders(Users user, int calculatedTotal, OrderStatus orderStatus) {
+        this.user = user;
+        this.orderAmount = calculatedTotal;
+        this.orderStatus = orderStatus;
+    }
 }

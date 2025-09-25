@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @RestController
-@Tag(name = "UserController", description = "")
+@Tag(name = "User", description = "회원 API")
 public class UserController {
 
     private final UserService userService;
@@ -46,7 +46,8 @@ public class UserController {
     ) {}
 
     @PostMapping("/join")
-    public ResponseEntity<ApiResponse> Join(
+    @Operation(summary = "회원 가입", description = "새로운 회원을 등록합니다.")
+    public ResponseEntity<ApiResponse> join(
             @Valid @RequestBody UserController.UserJoinReqBody form,
             BindingResult bindingResult
     ) throws Exception {
@@ -80,7 +81,8 @@ public class UserController {
     {}
 
     @GetMapping("/login")
-    public ResponseEntity<ApiResponse> Login(
+    @Operation(summary = "회원 로그인", description = "사용자의 정보를 확인하고 ApiKey를 클라이언트에 전송합니다.")
+    public ResponseEntity<ApiResponse> login(
             @Valid @RequestBody UserLoginReqBody reqBody,
             BindingResult bindingResult
     ) throws Exception {
@@ -100,7 +102,7 @@ public class UserController {
         }
 
         UserDto userDto = userService.login(reqBody.email,reqBody.password);
-        Cookie cookie = new Cookie("userId", userDto.userId()+"");
+        Cookie cookie = new Cookie("apiKey", userDto.apiKey());
         cookie.setMaxAge(3600);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -110,8 +112,9 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<ApiResponse> Logout(){
-        Cookie cookie = new Cookie("userId", null);
+    @Operation(summary = "회원 로그아웃", description = "현재 로그인 된 회원의 정보를 클라이언트에서 제거 하여 로그아웃 시킵니다.")
+    public ResponseEntity<ApiResponse> logout(){
+        Cookie cookie = new Cookie("apiKey", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
