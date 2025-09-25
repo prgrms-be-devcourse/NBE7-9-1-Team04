@@ -8,9 +8,7 @@ import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
-import com.backend.global.rq.Rq;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +24,7 @@ public class AddressService {
 
     @Transactional
     public AddressDto addAddress(AddressDto addressDto, UserDto userDto) {
-        Users user =  userRepository.getUsersByUserId(userDto.userId()).get();
+        Users user = userRepository.getUsersByUserId(userDto.userId()).get();
 
         Address address = new Address(
                 user,
@@ -40,7 +38,7 @@ public class AddressService {
     }
 
     public List<AddressDto> getAllAddress(UserDto userDto) {
-        Users user =  userRepository.getUsersByUserId(userDto.userId()).get();
+        Users user = userRepository.getUsersByUserId(userDto.userId()).get();
 
         List<Address> addresses = user.getAddresses();
         List<AddressDto> addressDtoList = addresses.stream().map(AddressDto::new).toList();
@@ -48,24 +46,30 @@ public class AddressService {
         return addressDtoList;
     }
 
-    public AddressDto updateAddress(AddressDto addressDto, UserDto userDto) {
-        Users user =  userRepository.getUsersByUserId(userDto.userId()).get();
-        List<Address> addresses = user.getAddresses();
+    public AddressDto getAddressById(Long addressId, UserDto userDto) {
+        Users user = userRepository.getUsersByUserId(userDto.userId()).get();
 
-        Optional<Address> optionalAddress = addresses.stream()
-                .map(addrDto ->
-                {
-                    if(addrDto.getAddressId() == addressDto.addressId()) return addrDto;
-                    return null;
-                })
-                .findFirst();
+        Optional<Address> optionalAddress = user.getAddress(addressId);
+        if (!optionalAddress.isPresent()) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ADDRESS);
+        }
 
-        if(!optionalAddress.isPresent()) {
+        return new AddressDto(optionalAddress.get());
+    }
+
+    @Transactional
+    public AddressDto updateAddress(AddressDto addressDto, Long addressId, UserDto userDto) {
+        Users user = userRepository.getUsersByUserId(userDto.userId()).get();
+
+        Optional<Address> optionalAddress = user.getAddress(addressId);
+        if (!optionalAddress.isPresent()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ADDRESS);
         }
 
         Address address = optionalAddress.get();
         address.changeAddress(addressDto);
-        return new  AddressDto(address);
+
+        return new AddressDto(address);
     }
+
 }

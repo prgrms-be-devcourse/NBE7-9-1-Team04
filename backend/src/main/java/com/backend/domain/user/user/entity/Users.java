@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -58,5 +59,14 @@ public class Users extends BaseEntity {
 
     public boolean isMatchedPassword(String password) {
         return this.password.equals(password);
+    }
+
+    public Optional<Address> getAddress(Long addressId) {
+        for(Address address : this.addresses) {
+            if(address.getAddressId().equals(addressId)) {
+                return Optional.of(address);
+            }
+        }
+        return Optional.empty();
     }
 }

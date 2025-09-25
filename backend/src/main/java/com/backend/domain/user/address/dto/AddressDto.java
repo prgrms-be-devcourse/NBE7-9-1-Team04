@@ -1,6 +1,7 @@
 package com.backend.domain.user.address.dto;
 
 import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.address.request.AddressReqBody;
 
 public record AddressDto(
         Long addressId,
@@ -16,6 +17,16 @@ public record AddressDto(
                 address.getAddress(),
                 address.getAddressDetail(),
                 address.getPostNumber()
+        );
+    }
+
+    public AddressDto(AddressReqBody addressReqBody) {
+        this(
+                null,
+                null,
+                addressReqBody.address(),
+                addressReqBody.addressDetail(),
+                addressReqBody.postNumber()
         );
     }
 }
