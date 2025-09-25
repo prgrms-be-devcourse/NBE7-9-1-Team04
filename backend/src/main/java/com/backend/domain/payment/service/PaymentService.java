@@ -30,10 +30,6 @@ public class PaymentService {
         Orders orders = orderRepository.findById(request.orderId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
-        if(request.paymentAmount() <= 0) {
-            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_INVALID);
-        }
-
         if(orders.getOrderAmount() != request.paymentAmount()){
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
