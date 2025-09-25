@@ -1,7 +1,9 @@
 package com.backend.domain.payment.entity;
 
 import com.backend.domain.order.entity.Orders;
+import com.backend.global.exception.BusinessException;
 import com.backend.global.jpa.entity.BaseEntity;
+import com.backend.global.response.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +31,7 @@ public class Payment extends BaseEntity {
     private PaymentStatus paymentStatus;
 
     // 주문 엔티티와 연결 관계, OneToOne
-    @OneToOne(mappedBy = "paymentId", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
     private Orders orders;
 
     @Builder
@@ -38,5 +40,12 @@ public class Payment extends BaseEntity {
         this.paymentMethod = paymentMethod;
         this.paymentStatus = PaymentStatus.PENDING;
         this.orders = orders;
+    }
+
+    public void complete() {
+        if (this.paymentStatus == PaymentStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+        this.paymentStatus = PaymentStatus.COMPLETED;
     }
 }
