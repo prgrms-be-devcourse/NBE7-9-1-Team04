@@ -69,6 +69,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders() {
         //쿠키에서 인증된 유저 가져오기
         Users actor = rq.getUser();
+
         //주문 조회 로직
         List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.getUserId());
         return ResponseEntity.ok(ApiResponse.success(summaries));
