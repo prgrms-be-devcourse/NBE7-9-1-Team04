@@ -28,24 +28,15 @@ public class CartService {
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
 
-    /**
-     * UserDto를 받아 Users 엔티티를 조회하는 헬퍼 메서드
-     * 필요성 : 가독성 ⬆️, 중복 제거 ⭕️, 각 메서드의 책임 명확히 분리
-     * 이미 검증된 유효한 데이터이므로 get() 사용
-    */
-    private Users getUserEntity(UserDto userDto) {
-        return userRepository.findById(userDto.userId()).get();
-    }
-
     @Transactional
     public CartResponse addCartItem(UserDto userDto, CartAddRequest request) {
 
-        Users user = getUserEntity(userDto);
+        Users user = userRepository.findById(userDto.userId()).get();
 
         Menu menu = menuRepository.findById(request.getMenuId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
-        Cart cartItem = cartRepository.findByUserAndMenu(user, menu)
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId()) // menu.getId()도 menu.getMenuId()로 바뀌었을 수 있습니다.
                 .orElse(null);
 
         if (cartItem != null) {
@@ -59,8 +50,6 @@ public class CartService {
 
     @Transactional
     public CartResponse updateCartItemQuantity(UserDto userDto, Long menuId, CartUpdateRequest request) {
-        Users user = getUserEntity(userDto);
-
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
@@ -68,24 +57,20 @@ public class CartService {
             throw new BusinessException(ErrorCode.INVALID_QUANTITY);
         }
 
-        Cart cartItem = cartRepository.findByUserAndMenu(user, menu)
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
         cartItem.updateQuantity(request.getQuantity());
 
         return CartResponse.from(cartItem);
-
     }
 
     @Transactional
     public void deleteCartItem(UserDto userDto, Long menuId) {
-
-        Users user = getUserEntity(userDto);
-
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
-        Cart cartItem = cartRepository.findByUserAndMenu(user, menu)
+        Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
         cartRepository.delete(cartItem);
@@ -94,9 +79,7 @@ public class CartService {
     @Transactional(readOnly = true)
     public CartListResponse getCart(UserDto userDto) {
 
-        Users user = getUserEntity(userDto);
-
-        List<Cart> cartItems = cartRepository.findByUser(user);
+        List<Cart> cartItems = cartRepository.findByUser_UserId(userDto.userId());
 
         List<CartResponse> cartResponses = cartItems.stream()
                 .map(CartResponse::from)
@@ -107,9 +90,6 @@ public class CartService {
 
     @Transactional
     public void clearCart(UserDto userDto) {
-
-        Users user = getUserEntity(userDto);
-
-        cartRepository.deleteAllByUser(user);
+        cartRepository.deleteAllByUser_UserId(userDto.userId());
     }
 }
