@@ -2,7 +2,6 @@ package com.backend.domain.order.service;
 
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
-import com.backend.domain.order.controller.OrderController;
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderDetailsCreateRequest;
 import com.backend.domain.order.dto.response.OrderSummaryDetailResponse;
@@ -11,13 +10,11 @@ import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
-import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.domain.user.user.service.UserService;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +34,10 @@ public class OrderService {
     private final UserService usersService;
 
     @Transactional
-    public Orders createOrder(@Valid OrderCreateRequest request) throws Exception {
-        // 1. 유저 확인 (Users 엔티티 직접 조회)
-        Users user = (usersRepository.getUsersByEmail(request.email())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER)));
+    public Orders createOrder(Users actor, OrderCreateRequest request) throws Exception {
+        // 1. 유저는 이미 Rq에서 검증
+        Users user = actor;
+
         // 2. 주문 항목 처리
         List<OrderDetails> orderDetails = new ArrayList<>();
         int calculatedTotal = 0;
@@ -115,6 +112,7 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
+    // 사용자 ID로 주문 목록 조회
     @Transactional(readOnly = true)
     public List<OrderSummaryResponse> getOrdersByUserId(Long userId) {
         List<Orders> orders = orderRepository.findByUser_UserId(userId);

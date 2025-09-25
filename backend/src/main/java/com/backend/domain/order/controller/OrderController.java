@@ -10,7 +10,10 @@ import com.backend.domain.order.service.OrderService;
 import com.backend.domain.user.address.entity.Address;
 import com.backend.domain.user.address.repository.AddressRepository;
 import com.backend.domain.user.address.service.AddressService;
+import com.backend.domain.user.user.entity.Users;
+import com.backend.domain.user.user.service.UserService;
 import com.backend.global.response.ApiResponse;
+import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +34,7 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
+    private final Rq rq;
 
     @PostMapping
     @Transactional
@@ -38,7 +42,10 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(
             @Valid @RequestBody OrderCreateRequest request
     ) throws Exception {
-        Orders order = orderService.createOrder(request);
+
+        Users actor = rq.getUser();
+        Orders order = orderService.createOrder(actor, request);
+
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
     }
 
@@ -59,11 +66,11 @@ public class OrderController {
 
     @GetMapping
     @Operation(summary = "사용자 주문 목록 조회")
-    public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders(
-            @RequestParam Long userId
-    ) {
+    public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders() {
+        //쿠키에서 인증된 유저 가져오기
+        Users actor = rq.getUser();
         //주문 조회 로직
-        List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(userId);
+        List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.getUserId());
         return ResponseEntity.ok(ApiResponse.success(summaries));
     }
 }
