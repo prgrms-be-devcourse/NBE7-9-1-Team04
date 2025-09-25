@@ -29,7 +29,7 @@ public class MenuController {
 
     private void validateAdmin(UserDto actor)
     {
-        if(actor.level() != 1)          //아직 관리자 레벨을 정하지 않아 임시로 1로 지정
+        if(actor.level() != 0)          //아직 관리자 레벨을 정하지 않아 임시로 1로 지정
         {
             throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
         }
