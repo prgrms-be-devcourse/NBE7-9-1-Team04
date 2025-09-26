@@ -21,7 +21,7 @@ public class SpringDoc {
     public GroupedOpenApi cartApi() {
         return GroupedOpenApi.builder()
                 .group("cart")
-                .pathsToMatch("/api/cart/**")
+                .pathsToMatch("/api/carts/**")
                 .build();
     }
 
@@ -54,7 +54,7 @@ public class SpringDoc {
     public GroupedOpenApi menuApi() {
         return GroupedOpenApi.builder()
                 .group("menu")
-                .pathsToMatch("/api/menu/**")
+                .pathsToMatch("/api/menus/**")
                 .build();
     }
 
@@ -62,7 +62,7 @@ public class SpringDoc {
     public GroupedOpenApi adminMenuApi() {
         return GroupedOpenApi.builder()
                 .group("adminMenu")
-                .pathsToMatch("/api/admin/menu/**")
+                .pathsToMatch("/api/admin/menus/**")
                 .build();
     }
 }
