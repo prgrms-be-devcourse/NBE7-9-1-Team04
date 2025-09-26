@@ -19,13 +19,9 @@ public enum ErrorCode {
     NOT_FOUND_ADDRESS("A001",HttpStatus.NOT_FOUND,"해당 주소를 찾을 수 없습니다."),
 
     // 장바구니
-    // 장바구니에 추가하려는 상품 ID가 DB에 존재하지 않을 때 사용합니다.
     NOT_FOUND_PRODUCT("C001", HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다."),
-    // 상품의 재고가 주문하려는 수량보다 적을 때 발생시킵니다.
-    OUT_OF_STOCK("C002", HttpStatus.CONFLICT, "상품의 재고가 부족합니다."),
-    // 수량을 0 이하의 값으로 변경하려고 할 때 발생시킵니다.
+    SOLD_OUT_ADD_CART("C002", HttpStatus.CONFLICT, "품절된 상품은 장바구니에 담을 수 없습니다."),
     INVALID_QUANTITY("C004", HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상이어야 합니다."),
-    // 장바구니가 비어있는 상태에서 주문 시도할 때 발생시킵니다.
     EMPTY_CART("C006", HttpStatus.NOT_FOUND, "장바구니가 비어 있습니다."),
 
     //주문
