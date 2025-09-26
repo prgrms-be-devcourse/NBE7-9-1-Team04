@@ -9,6 +9,7 @@ public record OrderSummaryResponse(
         int orderAmount,           // 총 금액
         String status,             // 주문 상태
         String address,            // 주소
+        Long paymentId,         // 결제 번호
         List<OrderSummaryDetailResponse> items  // 주문 상세 목록
 ) {
 }

@@ -41,7 +41,7 @@ public class AdminOrderController {
         UserDto actor = rq.getUser();
 
         //관리자 인증 로직 구현 예정
-        if (actor.level() != 1) {
+        if (actor.level() != 0) {
             throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
         }
 
