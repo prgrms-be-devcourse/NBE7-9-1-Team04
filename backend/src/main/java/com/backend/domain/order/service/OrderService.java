@@ -160,7 +160,8 @@ public class OrderService {
                                     .map(detail -> new OrderSummaryDetailResponse(
                                             detail.getMenu().getName(),
                                             detail.getQuantity(),
-                                            detail.getOrderPrice()
+                                            detail.getOrderPrice(),
+                                            detail.getMenu().getImageUrl()
                                     ))
                                     .toList()
                     );
@@ -246,7 +247,8 @@ public class OrderService {
                 .map(od -> new OrderSummaryDetailResponse(
                         od.getMenu().getName(),
                         od.getQuantity(),
-                        od.getOrderPrice()
+                        od.getOrderPrice(),
+                        od.getMenu() != null ? od.getMenu().getImageUrl() : null
                 ))
                 .toList();
 

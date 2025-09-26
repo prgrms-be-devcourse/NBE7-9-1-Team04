@@ -11,6 +11,7 @@ public record AdminOrderSummaryResponse(
         String userEmail,
         String userPhone,
         String address,
+        Long paymentId,
         List<OrderSummaryDetailResponse> items
 ) {
 }

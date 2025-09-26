@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { fetchApi } from "@/lib/client"
+import Link from "next/link"
 
 type OrderItem = {
   productName: string
   quantity: number
   orderPrice: number
+  imageUrl?: string
 }
 
 type AdminOrder = {
@@ -17,6 +19,7 @@ type AdminOrder = {
   userEmail: string
   userPhone: string
   address: string
+  paymentId?: number
   items: OrderItem[]
 }
 
@@ -103,25 +106,57 @@ export default function AdminOrdersPage() {
                 </p>
 
                 {/* 상품 */}
-                <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                <ul className="mt-2 text-sm text-gray-700 space-y-2">
                   {order.items.map((item, idx) => (
-                    <li key={idx} className="flex justify-between">
-                      <span>
-                        {item.productName} ({item.quantity}개)
+                    <li
+                      key={idx}
+                      className="flex items-center gap-3 border-b pb-2"
+                    >
+                      {/* 이미지 */}
+                      {item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.productName}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                      )}
+                      {/* 상품명 + 수량 */}
+                      <div className="flex-1">
+                        <span className="font-medium">{item.productName}</span>{" "}
+                        <span className="text-gray-500">
+                          ({item.quantity}개)
+                        </span>
+                      </div>
+                      {/* 금액 */}
+                      <span className="font-semibold">
+                        {item.orderPrice.toLocaleString()}원
                       </span>
-                      <span>{item.orderPrice.toLocaleString()}원</span>
                     </li>
                   ))}
                 </ul>
 
                 {/* 버튼 */}
                 <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={() => updateStatus(order.orderId, "PAID")}
-                    className="flex-1 border rounded py-2 text-sm bg-blue-50 hover:bg-blue-100"
-                  >
-                    결제 완료(PAID)
-                  </button>
+                  {/* 결제 내역 보기 */}
+                  {order.paymentId ? (
+                    <Link
+                      href={`/payment/${order.paymentId}`}
+                      className="flex-1"
+                    >
+                      <button className="w-full border rounded py-2 text-sm bg-blue-50 hover:bg-blue-100 text-center">
+                        결제 내역 보기
+                      </button>
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className="flex-1 w-full border rounded py-2 text-sm bg-gray-200 text-gray-400 cursor-not-allowed"
+                    >
+                      결제 내역 없음
+                    </button>
+                  )}
+
+                  {/* 배송 처리 */}
                   <button
                     onClick={() => updateStatus(order.orderId, "COMPLETED")}
                     className="flex-1 border rounded py-2 text-sm bg-green-50 hover:bg-green-100"

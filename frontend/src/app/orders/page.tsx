@@ -8,6 +8,7 @@ type OrderItem = {
   productName: string
   quantity: number
   orderPrice: number
+  imageUrl?: string
 }
 
 type Order = {
@@ -119,8 +120,8 @@ export default function OrdersPage() {
                   </h2>
                   <span
                     className={`text-sm border px-2 py-0.5 rounded ${order.status === "CANCELED"
-                        ? "text-red-600 border-red-600"
-                        : "text-green-600 border-green-600"
+                      ? "text-red-600 border-red-600"
+                      : "text-green-600 border-green-600"
                       }`}
                   >
                     {order.status}
@@ -137,16 +138,32 @@ export default function OrdersPage() {
                   배송주소: {order.address}
                 </p>
 
-                <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                <ul className="mt-2 text-sm text-gray-600 space-y-3">
                   {order.items.map((item, idx) => (
-                    <li key={idx} className="flex justify-between">
-                      <span>
-                        {item.productName} ({item.quantity}개)
-                      </span>
-                      <span>{item.orderPrice.toLocaleString()}원</span>
+                    <li
+                      key={`${order.orderId}-${idx}`}
+                      className="flex items-center gap-4 py-2 border-b">
+                      {/* 상품 이미지 */}
+                      <img
+                        src={item.imageUrl}
+                        alt={item.productName}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+
+                      {/* 상품명 + 수량 */}
+                      <div className="flex-1">
+                        <p className="font-medium">{item.productName}</p>
+                        <p className="text-sm text-gray-500">{item.quantity}개</p>
+                      </div>
+
+                      {/* 가격 */}
+                      <div className="font-semibold">
+                        {item.orderPrice.toLocaleString()}원
+                      </div>
                     </li>
                   ))}
                 </ul>
+
 
                 {/* 버튼 영역 */}
                 <div className="flex gap-2 mt-4">

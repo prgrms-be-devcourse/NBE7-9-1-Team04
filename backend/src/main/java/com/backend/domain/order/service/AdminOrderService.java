@@ -48,11 +48,13 @@ public class AdminOrderService {
                             addressDto != null
                                     ? addressDto.address() + " " + addressDto.addressDetail()
                                     : null,
+                            order.getPayment().getPaymentId(),
                             order.getOrderDetails().stream()
                                     .map(detail -> new OrderSummaryDetailResponse(
                                             detail.getMenu().getName(),
                                             detail.getQuantity(),
-                                            detail.getOrderPrice()
+                                            detail.getOrderPrice(),
+                                            detail.getMenu() != null ? detail.getMenu().getImageUrl() : null
                                     ))
                                     .toList()
                     );
