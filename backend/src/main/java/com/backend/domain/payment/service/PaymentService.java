@@ -1,6 +1,5 @@
 package com.backend.domain.payment.service;
 
-import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
 import com.backend.domain.payment.dto.request.PaymentCreateRequest;
@@ -26,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final PaymentRetry paymentRetry;
 
     // 결제 요청
     @Transactional
@@ -46,16 +46,7 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
-        Payment payment = request.createPayment(orders);
-        Payment savePayment = paymentRepository.save(payment);
-
-        orders.setPayment(savePayment);
-        orders.setOrderStatus(OrderStatus.PAID);
-        orderRepository.save(orders);
-
-        payment.complete();
-
-        return new PaymentCreateResponse(savePayment);
+        return paymentRetry.processPaymentWithRetry(request, orders);
     }
 
     // 결제 단건 조회
