@@ -36,6 +36,10 @@ public class CartService {
         Menu menu = menuRepository.findById(request.getMenuId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
 
+        if(menu.getIsSoldOut()) {
+            throw new BusinessException(ErrorCode.SOLD_OUT_ADD_CART);
+        }
+
         Cart cartItem = cartRepository.findByUser_UserIdAndMenu_MenuId(userDto.userId(), menu.getMenuId())
                 .orElse(null);
 
