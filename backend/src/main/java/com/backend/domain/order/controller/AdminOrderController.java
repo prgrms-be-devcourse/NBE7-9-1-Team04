@@ -49,26 +49,4 @@ public class AdminOrderController {
         List<AdminOrderSummaryResponse> summaries = adminOrderService.getAllOrdersForAdmin();
         return ResponseEntity.ok(ApiResponse.success(summaries));
     }
-
-    @PutMapping("/{orderId}/status")
-    @Transactional
-    @Operation(summary = "주문 상태 업데이트", description = "주문의 상태를 업데이트합니다. (예: PAID, COMPLETED 등)")
-    public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody @Valid OrderStatusUpdateRequest reqBody
-    ) throws Exception {
-        //쿠키에서 인증된 유저 가져오기
-        UserDto actor = rq.getUser();
-
-        //관리자 인증 로직 구현 예정
-        if (actor.level() != 1) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
-        }
-        // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
-        orderService.updateOrderStatus(orderId, reqBody.newStatus());
-
-        // 업데이트된 주문 정보 반환
-        Optional<Orders> updatedOrder = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
-    }
 }

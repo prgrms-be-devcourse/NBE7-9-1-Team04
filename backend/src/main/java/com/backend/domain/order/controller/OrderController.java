@@ -1,6 +1,7 @@
 package com.backend.domain.order.controller;
 
 import com.backend.domain.order.dto.request.OrderCreateRequest;
+import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
 import com.backend.domain.order.dto.response.*;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/orders")
@@ -95,5 +97,23 @@ public class OrderController {
         );
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PutMapping("/{orderId}/status")
+    @Transactional
+    @Operation(summary = "주문 상태 업데이트", description = "주문의 상태를 업데이트합니다. (예: PAID, COMPLETED 등)")
+    public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody @Valid OrderStatusUpdateRequest reqBody
+    ) throws Exception {
+        //쿠키에서 인증된 유저 가져오기
+        UserDto actor = rq.getUser();
+
+        // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
+        orderService.updateOrderStatus(orderId, reqBody.newStatus());
+
+        // 업데이트된 주문 정보 반환
+        Optional<Orders> updatedOrder = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
     }
 }
