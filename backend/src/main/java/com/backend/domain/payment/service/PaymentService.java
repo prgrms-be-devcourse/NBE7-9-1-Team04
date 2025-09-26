@@ -2,7 +2,6 @@ package com.backend.domain.payment.service;
 
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
-import com.backend.domain.order.service.OrderService;
 import com.backend.domain.payment.dto.request.PaymentCreateRequest;
 import com.backend.domain.payment.dto.response.PaymentCancelResponse;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
@@ -26,9 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
-    private final OrderService orderService;
-    private final PaymentProcessor paymentProcessor;
-    private final PaymentFactory paymentFactory;
+    private final PaymentRetry paymentRetry;
 
     // 결제 요청
     @Transactional
@@ -49,44 +46,7 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
-        /**
-         * 결제 시도 로직: 성공 시 적재, 실패 시 재시도 1회
-         * */
-        int maxRetries = 2;
-        Exception lastException = null;
-        for(int attempt = 1; attempt <= maxRetries; attempt++){
-            try {
-                boolean paymentSuccess = paymentProcessor.process(request);
-                if(paymentSuccess) {
-                    Payment payment = paymentFactory.createCompletedPayment(request, orders);
-                    Payment savePayment = paymentRepository.save(payment);
-
-                    updateOrderForSuccessfulPayment(orders, savePayment);
-
-                    return new PaymentCreateResponse(savePayment);
-                }
-            } catch (Exception e) {
-                lastException = e;
-                log.error("결제 시도 중 오류: error={}", e.getMessage());
-            }
-        }
-
-        /**
-         * 결제 처리가 최종 실패했을 경우: 실패 데이터 적재
-         * */
-        Payment failedPayment = paymentFactory.createFailedPayment(request, orders);
-        paymentRepository.save(failedPayment);
-
-        orders.setPayment(failedPayment);
-        orderRepository.save(orders);
-
-        throw new BusinessException(ErrorCode.PAYMENT_FAILED);
-    }
-
-    // 결제 성공 시 주문 상태 업데이트
-    private void updateOrderForSuccessfulPayment(Orders orders, Payment payment) {
-        orders.setPayment(payment);
-        orderService.updateOrderStatus(orders.getOrderId(), "PAID");
+        return paymentRetry.processPaymentWithRetry(request, orders);
     }
 
     // 결제 단건 조회
