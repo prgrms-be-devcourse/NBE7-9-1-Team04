@@ -25,11 +25,11 @@ public class Address extends BaseEntity {
 
     private String postNumber;
 
-    public Address(Users user, String address, String addressDetail, String postNumber) {
+    public Address(Users user, AddressDto addressDto) {
         this.user = user;
-        this.address = address;
-        this.addressDetail = addressDetail;
-        this.postNumber = postNumber;
+        this.address = addressDto.address();
+        this.addressDetail = addressDto.addressDetail();
+        this.postNumber = addressDto.postNumber();
     }
 
     public Address changeAddress(AddressDto addressDto) {
