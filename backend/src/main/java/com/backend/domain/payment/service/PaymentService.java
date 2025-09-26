@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -61,7 +62,7 @@ public class PaymentService {
         return new PaymentInquiryResponse(payment);
     }
 
-    // 결제 단건 취소
+    // 결제 단건 취소 - controller
     @Transactional
     public PaymentCancelResponse cancelPayment(@Valid Long paymentId, UserDto currentUser) {
         if(paymentId == null || paymentId <= 0) {
@@ -84,7 +85,19 @@ public class PaymentService {
         return new PaymentCancelResponse(payment);
     }
 
-    // 취소된 결제 내역 삭제
+    // 결제 단건 취소 - orderService 연동
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void cancelPaymentByOrder(Orders order, UserDto user) {
+        Payment payment = order.getPayment();
+
+        if (payment.getPaymentStatus() != PaymentStatus.COMPLETED) {
+            throw new BusinessException(ErrorCode.PAYMENT_NOT_CANCELLABLE);
+        }
+
+        payment.cancel();
+    }
+
+    // 취소된 결제 내역 삭제 - controller
     @Transactional
     public void deletePayment(@Valid Long paymentId, UserDto currentUser) {
         if(paymentId == null || paymentId <= 0) {
@@ -103,5 +116,18 @@ public class PaymentService {
         }
 
         paymentRepository.delete(payment);
+    }
+
+    // 취소된 결제 내역 삭제 - orderService 연동
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void deletePaymentByOrder(Orders order, UserDto user) {
+        Payment payment = order.getPayment();
+
+        if (payment.getPaymentStatus() != PaymentStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.PAYMENT_DELETE_FAILED);
+        }
+
+        paymentRepository.delete(payment);
+        order.setPayment(null);
     }
 }

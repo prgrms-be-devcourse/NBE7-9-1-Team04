@@ -11,20 +11,20 @@ import com.backend.domain.order.entity.OrderDetails;
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
+import com.backend.domain.payment.entity.PaymentStatus;
+import com.backend.domain.payment.service.PaymentService;
 import com.backend.domain.user.address.dto.AddressDto;
 import com.backend.domain.user.address.entity.Address;
 import com.backend.domain.user.address.repository.AddressRepository;
 import com.backend.domain.user.user.dto.UserDto;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
-import com.backend.domain.user.user.service.UserService;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final AddressRepository addressRepository;
     private final CartService cartService;
+    private final PaymentService paymentService;
 
     @Transactional
     public Orders createOrder(UserDto actor, OrderCreateRequest request) throws Exception {
@@ -193,7 +194,13 @@ public class OrderService {
             throw new BusinessException(ErrorCode.INVALID_ORDER_PROCESSING_TIME);
         }
 
-        // 5. 주문 상태를 CANCELED로 변경
+        // 5. 결제 먼저 취소 시도 (실패하면 전체 롤백)
+        if (order.getPayment() != null &&
+                order.getPayment().getPaymentStatus() == PaymentStatus.COMPLETED) {
+            paymentService.cancelPaymentByOrder(order, actor);
+        }
+
+        // 6. 주문 상태를 CANCELED로 변경
         order.setOrderStatus(OrderStatus.CANCELED);
 
         return order;
@@ -215,7 +222,12 @@ public class OrderService {
             throw new BusinessException(ErrorCode.INVALID_STATUS_TRANSITION);
         }
 
-        // 4. 주문 삭제
+        // 4. 결제 먼저 취소 시도 (실패하면 전체 롤백)
+        if (order.getPayment() != null) {
+            paymentService.deletePaymentByOrder(order, actor);
+        }
+
+        // 5. 주문 삭제
         orderRepository.delete(order);
     }
 
