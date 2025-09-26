@@ -38,14 +38,14 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-md w-full max-w-sm space-y-4"
       >
-        <h1 className="text-2xl font-bold text-center">로그인</h1>
+        <h1 className="text-2xl text-black font-bold text-center">로그인</h1>
 
         <input
           type="email"
           placeholder="이메일"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full text-black border p-2 rounded"
           required
         />
 
@@ -54,7 +54,7 @@ export default function LoginPage() {
           placeholder="비밀번호"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full text-black border p-2 rounded"
           required
         />
 
