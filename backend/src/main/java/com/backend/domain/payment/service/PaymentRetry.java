@@ -11,7 +11,6 @@ import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -25,7 +24,6 @@ public class PaymentRetry {
     private final PaymentFactory paymentFactory;
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
-    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 재시도 로직
