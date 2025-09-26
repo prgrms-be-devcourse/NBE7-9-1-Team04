@@ -27,6 +27,8 @@ public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final OrderService orderService;
+    private final PaymentProcessor paymentProcessor;
+    private final PaymentFactory paymentFactory;
 
     // 결제 요청
     @Transactional
@@ -54,9 +56,9 @@ public class PaymentService {
         Exception lastException = null;
         for(int attempt = 1; attempt <= maxRetries; attempt++){
             try {
-                boolean paymentSuccess = processPayment(request);
+                boolean paymentSuccess = paymentProcessor.process(request);
                 if(paymentSuccess) {
-                    Payment payment = createCompletedPayment(request, orders);
+                    Payment payment = paymentFactory.createCompletedPayment(request, orders);
                     Payment savePayment = paymentRepository.save(payment);
 
                     updateOrderForSuccessfulPayment(orders, savePayment);
@@ -72,38 +74,13 @@ public class PaymentService {
         /**
          * 결제 처리가 최종 실패했을 경우: 실패 데이터 적재
          * */
-        Payment failedPayment = createFailedPayment(request, orders);
+        Payment failedPayment = paymentFactory.createFailedPayment(request, orders);
         paymentRepository.save(failedPayment);
 
+        orders.setPayment(failedPayment);
+        orderRepository.save(orders);
+
         throw new BusinessException(ErrorCode.PAYMENT_FAILED);
-    }
-
-    // 결제 처리 (결제 성공 여부 확인)
-    private boolean processPayment(PaymentCreateRequest request){
-        try {
-            /*
-            * 결제 실패 시뮬레이션을 위한 확률, 70% 성공률이라고 가정
-            * */
-            boolean success = Math.random() > 0.3;
-
-            return success;
-        } catch (Exception e){
-            return false;
-        }
-    }
-
-    // 결제 성공 시 결제 상태가 COMPLETE 상태의 Payment 생성
-    private Payment createCompletedPayment(PaymentCreateRequest request, Orders orders){
-        Payment payment = request.createPayment(orders);
-        payment.complete();
-        return payment;
-    }
-
-    // 결제 실패 시 결제 상태가 FAILD 상태인 Payment 생성
-    private Payment createFailedPayment(PaymentCreateRequest request, Orders orders){
-        Payment payment = request.createPayment(orders);
-        payment.fail();
-        return payment;
     }
 
     // 결제 성공 시 주문 상태 업데이트
