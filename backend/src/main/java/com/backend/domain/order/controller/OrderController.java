@@ -2,10 +2,7 @@ package com.backend.domain.order.controller;
 
 import com.backend.domain.order.dto.request.OrderCreateRequest;
 import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
-import com.backend.domain.order.dto.response.OrderCancelResponse;
-import com.backend.domain.order.dto.response.OrderCreateResponse;
-import com.backend.domain.order.dto.response.OrderDeleteResponse;
-import com.backend.domain.order.dto.response.OrderSummaryResponse;
+import com.backend.domain.order.dto.response.*;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.OrderService;
 import com.backend.domain.user.user.dto.UserDto;
@@ -45,21 +42,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse((order))));
     }
 
-    @PutMapping("/{orderId}/status")
-    @Transactional
-    @Operation(summary = "주문 상태 업데이트", description = "주문의 상태를 업데이트합니다. (예: PAID, COMPLETED 등)")
-    public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody @Valid OrderStatusUpdateRequest reqBody
-    ) {
-        // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
-        orderService.updateOrderStatus(orderId, reqBody.newStatus());
-
-        // 업데이트된 주문 정보 반환
-        Optional<Orders> updatedOrder = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
-    }
-
     @GetMapping
     @Operation(summary = "사용자 주문 목록 조회", description = "인증된 사용자의 모든 주문 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<List<OrderSummaryResponse>>> getOrders() throws Exception {
@@ -69,6 +51,17 @@ public class OrderController {
         //주문 조회 로직
         List<OrderSummaryResponse> summaries = orderService.getOrdersByUserId(actor.userId());
         return ResponseEntity.ok(ApiResponse.success(summaries));
+    }
+
+    @GetMapping("/{orderId}")
+    @Operation(summary = "주문 단건 조회", description = "특정 주문을 조회합니다.")
+    public ResponseEntity<ApiResponse<OrderSummaryResponse>> getOrderById(
+            @PathVariable Long orderId
+    ) throws Exception {
+        UserDto actor= rq.getUser();
+
+        OrderSummaryResponse order = orderService.getOrderByUserId(actor.userId(),orderId);
+        return ResponseEntity.ok(ApiResponse.success(order));
     }
 
     @PutMapping("/{orderId}/cancel")
@@ -104,5 +97,23 @@ public class OrderController {
         );
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PutMapping("/{orderId}/status")
+    @Transactional
+    @Operation(summary = "주문 상태 업데이트", description = "주문의 상태를 업데이트합니다. (예: PAID, COMPLETED 등)")
+    public ResponseEntity<ApiResponse<OrderCreateResponse>> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody @Valid OrderStatusUpdateRequest reqBody
+    ) throws Exception {
+        //쿠키에서 인증된 유저 가져오기
+        UserDto actor = rq.getUser();
+
+        // 주문 상태 업데이트 로직 (예: 결제 완료, 배송 중 등)
+        orderService.updateOrderStatus(orderId, reqBody.newStatus());
+
+        // 업데이트된 주문 정보 반환
+        Optional<Orders> updatedOrder = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(ApiResponse.success(new OrderCreateResponse(updatedOrder)));
     }
 }

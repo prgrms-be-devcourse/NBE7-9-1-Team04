@@ -44,6 +44,7 @@ public class Orders extends BaseEntity {
 
     //     Address 엔티티와의 관계 (다대일) - 주소 도메인이 만들어지면 연결
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
     private Address address;
 
     //     Payment 엔티티와의 관계 (일대일) - 결제 도메인이 만들어지면 연결
@@ -58,9 +59,10 @@ public class Orders extends BaseEntity {
         }
     }
 
-    public Orders(Users user, int calculatedTotal, OrderStatus orderStatus) {
+    public Orders(Users user, int orderAmount, OrderStatus orderStatus, Address address) {
         this.user = user;
-        this.orderAmount = calculatedTotal;
+        this.orderAmount = orderAmount;
         this.orderStatus = orderStatus;
+        this.address = address;
     }
 }

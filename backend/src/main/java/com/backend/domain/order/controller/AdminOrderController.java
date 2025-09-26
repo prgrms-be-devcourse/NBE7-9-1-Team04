@@ -1,6 +1,9 @@
 package com.backend.domain.order.controller;
 
+import com.backend.domain.order.dto.request.OrderStatusUpdateRequest;
 import com.backend.domain.order.dto.response.AdminOrderSummaryResponse;
+import com.backend.domain.order.dto.response.OrderCreateResponse;
+import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.service.AdminOrderService;
 import com.backend.domain.order.service.OrderService;
 import com.backend.domain.user.user.dto.UserDto;
@@ -11,13 +14,15 @@ import com.backend.global.response.ErrorCode;
 import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/admin/orders")
@@ -26,6 +31,7 @@ import java.util.List;
 public class AdminOrderController {
 
     private final AdminOrderService adminOrderService;
+    private final OrderService orderService;
     private final Rq rq;
 
     @GetMapping
@@ -35,6 +41,9 @@ public class AdminOrderController {
         UserDto actor = rq.getUser();
 
         //관리자 인증 로직 구현 예정
+        if (actor.level() != 1) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ADMIN);
+        }
 
         // 전체 주문 조회
         List<AdminOrderSummaryResponse> summaries = adminOrderService.getAllOrdersForAdmin();
