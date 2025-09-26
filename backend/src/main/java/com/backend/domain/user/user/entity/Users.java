@@ -1,6 +1,7 @@
 package com.backend.domain.user.user.entity;
 
 import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -44,6 +45,10 @@ public class Users extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.level = level;
         this.apiKey = UUID.randomUUID().toString();
+    }
+
+    public Users(UserDto userDto) {
+        this.userId = userDto.userId();
     }
 
     public String changeApiKey() throws Exception {

@@ -24,16 +24,12 @@ public class AddressService {
 
     @Transactional
     public AddressDto addAddress(AddressDto addressDto, UserDto userDto) {
-        Users user = userRepository.getUsersByUserId(userDto.userId()).get();
-
         Address address = new Address(
-                user,
-                addressDto.addressDetail(),
-                addressDto.address(),
-                addressDto.postNumber()
+                userDto.getIdUser(),
+                addressDto
         );
 
-        address = user.addAddress(address);
+        address = addressRepository.save(address);
         return new AddressDto(address);
     }
 

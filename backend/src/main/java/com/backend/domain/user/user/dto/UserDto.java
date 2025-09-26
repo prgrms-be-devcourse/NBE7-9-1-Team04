@@ -25,4 +25,9 @@ public record UserDto (
                 users.getApiKey()
         );
     }
+
+    public Users getIdUser(){
+        //ID값만 가지고 있는 User 객체를 사용
+        return new Users(this);
+    }
 }
