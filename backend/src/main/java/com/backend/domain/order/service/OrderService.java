@@ -152,6 +152,9 @@ public class OrderService {
                             addressDto != null
                                     ? addressDto.address() + " " + addressDto.addressDetail()
                                     : null,
+                            order.getPayment() != null
+                                    ? order.getPayment().getPaymentId()
+                                    : null,
                             order.getOrderDetails().stream()
                                     .map(detail -> new OrderSummaryDetailResponse(
                                             detail.getMenu().getName(),
@@ -241,6 +244,7 @@ public class OrderService {
                 order.getOrderAmount(),
                 order.getOrderStatus().name(),
                 order.getAddress() != null ? order.getAddress().getAddressDetail() : null,
+                order.getPayment() != null ? order.getPayment().getPaymentId() : null,
                 items
         );
     }

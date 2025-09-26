@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* <Header /> */}
-
+      {console.log(process.env.NEXT_PUBLIC_API_BASE_URL)}
       <main className="container py-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 text-balance">프리미엄 원두 패키지</h1>
@@ -24,7 +24,6 @@ export default function Home() {
           ))} */}
         </div>
       </main>
-
       {/* <Toaster /> */}
     </div>
   )
