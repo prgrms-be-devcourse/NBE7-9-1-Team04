@@ -88,7 +88,10 @@ public class UserController {
     @GetMapping("/logout")
     @Operation(summary = "회원 로그아웃", description = "현재 로그인 된 회원의 정보를 클라이언트에서 제거하여 로그아웃 시킵니다.")
     public ResponseEntity<ApiResponse> logout() throws Exception {
-        if(userService.isApiKeyExists(rq.getCookieValue("apiKey",""))) rq.deleteCookie("apiKey");
+        String apiKey = rq.getCookieValue("apiKey","");
+        rq.deleteCookie("apiKey");
+        userService.isApiKeyExists(apiKey);
+
         return ResponseEntity.ok(ApiResponse.success());
     }
 

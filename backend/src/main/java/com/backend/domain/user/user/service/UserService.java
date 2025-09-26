@@ -5,6 +5,7 @@ import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
+import com.backend.global.rq.Rq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
