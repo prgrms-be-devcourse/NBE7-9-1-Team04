@@ -50,6 +50,10 @@ public class Payment extends BaseEntity {
         this.paymentStatus = PaymentStatus.COMPLETED;
     }
 
+    public void fail() {
+        this.paymentStatus = PaymentStatus.FAILED;
+    }
+
     public void cancel() {
         if(this.paymentStatus == PaymentStatus.CANCELED) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
