@@ -5,3 +5,18 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # 로깅 설정
+  logging:
+    level:
+      com.backend: DEBUG
+      org.springframework.context.event: DEBUG
+      org.springframework.transaction.event: DEBUG
+
+  # 이벤트 처리 설정
+  spring.application.events:
+    enabled: true

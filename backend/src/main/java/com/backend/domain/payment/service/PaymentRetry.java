@@ -1,8 +1,8 @@
 package com.backend.domain.payment.service;
 
+import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
 import com.backend.domain.order.repository.OrderRepository;
-import com.backend.domain.order.service.OrderService;
 import com.backend.domain.payment.dto.request.PaymentCreateRequest;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
 import com.backend.domain.payment.entity.Payment;
@@ -11,6 +11,7 @@ import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -24,7 +25,7 @@ public class PaymentRetry {
     private final PaymentFactory paymentFactory;
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
-    private final OrderService orderService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 재시도 로직
@@ -48,7 +49,9 @@ public class PaymentRetry {
         Payment payment = paymentFactory.createCompletedPayment(request, orders);
         Payment savePayment = paymentRepository.save(payment);
 
-        updateOrderForSuccessfulPayment(orders, savePayment);
+        orders.setPayment(savePayment);
+        orders.setOrderStatus(OrderStatus.PAID); // 직접 상태 변경
+        orderRepository.save(orders);
 
         return new PaymentCreateResponse(savePayment);
     }
@@ -68,11 +71,5 @@ public class PaymentRetry {
         orderRepository.save(orders);
 
         throw new BusinessException(ErrorCode.PAYMENT_FAILED);
-    }
-
-    // 결제 성공 시 주문 상태 업데이트
-    private void updateOrderForSuccessfulPayment(Orders orders, Payment payment) {
-        orders.setPayment(payment);
-        orderService.updateOrderStatus(orders.getOrderId(), "PAID");
     }
 }
