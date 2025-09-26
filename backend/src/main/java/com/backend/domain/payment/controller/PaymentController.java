@@ -5,22 +5,23 @@ import com.backend.domain.payment.dto.response.PaymentCancelResponse;
 import com.backend.domain.payment.dto.response.PaymentCreateResponse;
 import com.backend.domain.payment.dto.response.PaymentInquiryResponse;
 import com.backend.domain.payment.service.PaymentService;
+import com.backend.domain.user.user.dto.UserDto;
 import com.backend.global.response.ApiResponse;
+import com.backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "Payment", description = "결제 API")
 public class PaymentController {
     private final PaymentService paymentService;
+    private final Rq rq;
 
     // 결제 생성 API
     @Operation(
@@ -31,8 +32,9 @@ public class PaymentController {
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<PaymentCreateResponse>> createPayment(
             @Valid @RequestBody PaymentCreateRequest request
-            ) {
-        PaymentCreateResponse response = paymentService.createPayment(request);
+            ) throws Exception {
+        UserDto currentUser = rq.getUser();
+        PaymentCreateResponse response = paymentService.createPayment(request, currentUser);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -44,12 +46,13 @@ public class PaymentController {
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse<PaymentInquiryResponse>> getPayment(
             @Valid @PathVariable Long paymentId
-    ) {
-        PaymentInquiryResponse response = paymentService.getPayment(paymentId);
+    ) throws Exception {
+        UserDto currentUser = rq.getUser();
+        PaymentInquiryResponse response = paymentService.getPayment(paymentId, currentUser);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 결제 단건 삭제 API
+    // 결제 단건 취소 API
     @Operation(
             summary = "결제 취소",
             description = "완료(COMPLETED)된 결제를 취소(CANCELED) 상태로 변경합니다. " +
@@ -58,8 +61,24 @@ public class PaymentController {
     @PutMapping("/{paymentId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
             @Valid @PathVariable Long paymentId
-    ) {
-        PaymentCancelResponse response = paymentService.cancelPayment(paymentId);
+    ) throws Exception {
+        UserDto currentUser = rq.getUser();
+        PaymentCancelResponse response = paymentService.cancelPayment(paymentId, currentUser);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    // 취소된 결제 내역 삭제
+    @Operation(
+            summary = "결제 삭제",
+            description = "취소(CANCELED) 상태의 결제 내역만 삭제합니다. " +
+                    "취소되지 않았거나, 존재하지 않는 paymentId에 대한 삭제를 요청할 시 에러를 반환합니다."
+    )
+    @DeleteMapping("/{paymentId}/delete")
+    public ResponseEntity<ApiResponse<Void>> deletePayment(
+            @Valid @PathVariable Long paymentId
+    ) throws Exception {
+        UserDto currentUser = rq.getUser();
+        paymentService.deletePayment(paymentId, currentUser);
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

@@ -46,6 +46,7 @@ public enum ErrorCode {
     INVALID_PAYMENT_METHOD("P006", HttpStatus.BAD_REQUEST, "유효하지 않은 결제 방법입니다."),
     PAYMENT_AMOUNT_MISMATCH("P007", HttpStatus.BAD_REQUEST, "주문 금액과 결제 금액이 일치하지 않습니다."),
     PAYMENT_NOT_CANCELLABLE("P008", HttpStatus.CONFLICT, "취소할 수 없는 결제 상태입니다."),
+    PAYMENT_DELETE_FAILED("P009", HttpStatus.BAD_REQUEST, "취소된 결제 내역만 삭제 가능합니다."),
 
     // 메뉴
     DUPLICATE_MENU_NAME("M001", HttpStatus.CONFLICT, "이미 존재하는 메뉴 이름입니다."),
