@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthTokenService {
 
-    @Value("${custom.jwt.secretPatter}")
+    @Value("${custom.jwt.secretPattern}")
     private String secretPatter;
     @Value("${custom.jwt.expireSeconds}")
     private int expireSeconds;
