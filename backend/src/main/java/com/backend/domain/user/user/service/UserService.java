@@ -7,6 +7,7 @@ import com.backend.global.exception.BusinessException;
 import com.backend.global.response.ErrorCode;
 import com.backend.global.rq.Rq;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Users createUser(String email, String password, String phoneNumber) throws Exception {
         Optional<Users> optionalUsers= userRepository.getUsersByEmail(email);
@@ -22,7 +24,8 @@ public class UserService {
             throw new BusinessException(ErrorCode.CONFLICT_REGISTER);
         }
 
-        Users newUsers = new Users(email,password,phoneNumber,1);
+
+        Users newUsers = new Users(email,passwordEncoder.encode(password),phoneNumber,1);
         return userRepository.save(newUsers);
     }
 
@@ -34,7 +37,7 @@ public class UserService {
         }
         Users users = optionalUsers.get();
 
-        if(!users.isMatchedPassword(password)){
+        if(!passwordEncoder.matches(password,users.getPassword())){
             throw new BusinessException(ErrorCode.BAD_CREDENTIAL);
         }
 
