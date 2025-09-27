@@ -45,58 +45,38 @@ export default function OrdersPage() {
     (a, b) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()
   )
 
-  // ✅ 주문 취소 (결제 취소 → 주문 취소)
-  const handleCancel = async (orderId: number, paymentId?: number) => {
-    if (!paymentId) {
-      alert("결제 정보가 없습니다.")
-      return
-    }
+// ✅ 주문 취소 → status 변경 + 버튼 변경
+  const handleCancel = async (orderId: number) => {
     try {
-      // 1. 결제 취소
-      await fetchApi(`/api/payments/${paymentId}/cancel`, { method: "PUT" })
-
-      // 2. 주문 취소
-      await fetchApi(`/api/orders/${orderId}/status`, {
+      await fetchApi(`/api/orders/${orderId}/cancel`, {
         method: "PUT",
-        body: JSON.stringify({ newStatus: "CANCELED" }),
       })
-
       alert("주문이 취소되었습니다.")
 
-      // UI 상태 업데이트 (status → CANCELED 로 변경)
       setOrders((prev) =>
         prev.map((o) =>
           o.orderId === orderId ? { ...o, status: "CANCELED" } : o
         )
       )
     } catch (err) {
-      console.error("주문 취소 실패:", err)
-      alert("주문 취소에 실패했습니다.")
+      alert("취소 실패")
     }
   }
 
-  // ✅ 주문 삭제 (결제 삭제 → 주문 삭제)
-  const handleDelete = async (orderId: number, paymentId?: number) => {
-    if (!paymentId) {
-      alert("결제 정보가 없습니다.")
-      return
-    }
-    if (!confirm("정말 삭제하시겠습니까?")) return
+  // ✅ 주문 삭제 → API 호출 + UI 제거
+  const handleDelete = async (orderId: number) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      try {
+        await fetchApi(`/api/orders/${orderId}/delete`, {
+          method: "DELETE",
+        })
 
-    try {
-      // 1. 결제 삭제 (CANCELED 상태여야만 성공)
-      await fetchApi(`/api/payments/${paymentId}/delete`, { method: "DELETE" })
-
-      // 2. 주문 삭제
-      await fetchApi(`/api/orders/${orderId}/delete`, { method: "DELETE" })
-
-      alert("주문이 삭제되었습니다.")
-
-      // UI 상태 업데이트 (리스트에서 제거)
-      setOrders((prev) => prev.filter((o) => o.orderId !== orderId))
-    } catch (err) {
-      console.error("주문 삭제 실패:", err)
-      alert("주문 삭제에 실패했습니다.")
+        alert("주문이 삭제되었습니다.")
+        setOrders((prev) => prev.filter((o) => o.orderId !== orderId))
+      } catch (err) {
+        console.error("삭제 실패:", err)
+        alert("주문 삭제에 실패했습니다.")
+      }
     }
   }
 
