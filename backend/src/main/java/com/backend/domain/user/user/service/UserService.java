@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Users createUser(String email, String password, String phoneNumber) throws Exception {
+    public Users createUser(String email, String password, String phoneNumber) {
         Optional<Users> optionalUsers= userRepository.getUsersByEmail(email);
         if(optionalUsers.isPresent()){
             throw new BusinessException(ErrorCode.CONFLICT_REGISTER);
@@ -30,7 +30,7 @@ public class UserService {
     }
 
 
-    public UserDto login(String email, String password) throws Exception {
+    public UserDto login(String email, String password)  {
         Optional<Users> optionalUsers = userRepository.getUsersByEmail(email);
         if (!optionalUsers.isPresent()) {
             throw new BusinessException(ErrorCode.BAD_CREDENTIAL);
@@ -44,7 +44,7 @@ public class UserService {
         return new UserDto(users);
     }
 
-    public UserDto getUserByEmail(String email) throws Exception {
+    public UserDto getUserByEmail(String email)  {
         Optional<Users> optionalUser =  userRepository.getUsersByEmail(email);
         if(!optionalUser.isPresent()){
             throw new BusinessException(ErrorCode.NOT_FOUND_MEMBER);
@@ -53,7 +53,7 @@ public class UserService {
         return new UserDto(optionalUser.get());
     }
 
-    public UserDto getUserByUserId(Long userId) throws Exception {
+    public UserDto getUserByUserId(Long userId)  {
         Optional<Users> optionalUser = userRepository.getUsersByUserId(userId);
         if(!optionalUser.isPresent()){
             throw new BusinessException(ErrorCode.NOT_FOUND_MEMBER);
@@ -62,7 +62,7 @@ public class UserService {
         return new UserDto(optionalUser.get());
     }
 
-    public UserDto getUserByApiKey(String apikey) throws Exception {
+    public UserDto getUserByApiKey(String apikey)  {
         return new UserDto(findUserByApiKey(apikey));
     }
 
@@ -79,7 +79,7 @@ public class UserService {
          return new UserDto(user);
     }
 
-    private Users findUserByApiKey(String apiKey) throws Exception {
+    private Users findUserByApiKey(String apiKey) {
         if(apiKey.isBlank()){
             throw new BusinessException(ErrorCode.NOT_LOGIN_ACCESS);
         }
@@ -91,7 +91,7 @@ public class UserService {
         return optionalUsers.get();
     }
 
-    public boolean isApiKeyExists(String apiKey) throws Exception {
+    public boolean isApiKeyExists(String apiKey) {
         if(apiKey.isBlank()){
             throw new BusinessException(ErrorCode.NOT_LOGIN_ACCESS);
         }

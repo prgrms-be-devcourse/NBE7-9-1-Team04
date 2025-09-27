@@ -33,7 +33,7 @@ public class Users extends BaseEntity {
     private String phoneNumber;
 
     private int level;
-
+    @Column(unique = true)
     private String apiKey;
 
     @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE} , orphanRemoval = true)
