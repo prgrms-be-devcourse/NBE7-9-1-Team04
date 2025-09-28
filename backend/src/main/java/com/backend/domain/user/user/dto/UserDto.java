@@ -1,6 +1,8 @@
 package com.backend.domain.user.user.dto;
 
 import com.backend.domain.user.user.entity.Users;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 
 
@@ -13,7 +15,6 @@ public record UserDto (
         int level,
         String apiKey
 ) {
-
     public UserDto(Users users){
         this(
                 users.getUserId(),
@@ -26,6 +27,7 @@ public record UserDto (
         );
     }
 
+    @JsonIgnore
     public Users getIdUser(){
         //ID값만 가지고 있는 User 객체를 사용
         return new Users(this);

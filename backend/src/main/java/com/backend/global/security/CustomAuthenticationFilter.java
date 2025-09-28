@@ -63,15 +63,17 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         apikey = rq.getCookieValue("apiKey", "");
 
         if (apikey.isBlank()) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ACCESS);
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        UserDto userDto = userService.getUserByApiKey(apikey);
+        Users entityUser = userService.findUserByApiKey(apikey);
+        UserDto userDto = new UserDto(entityUser);
 
         UserDetails user = new User(
                 userDto.userEmail(),
                 "",
-                List.of()
+                entityUser.getAuthorities()
         );
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(

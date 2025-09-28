@@ -79,7 +79,7 @@ public class UserService {
          return new UserDto(user);
     }
 
-    private Users findUserByApiKey(String apiKey) {
+    public Users findUserByApiKey(String apiKey) {
         if(apiKey.isBlank()){
             throw new BusinessException(ErrorCode.NOT_LOGIN_ACCESS);
         }
