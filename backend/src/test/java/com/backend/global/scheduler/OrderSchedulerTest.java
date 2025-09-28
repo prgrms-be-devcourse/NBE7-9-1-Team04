@@ -1,4 +1,4 @@
-package com.backend.grobal.scheduler;
+package com.backend.global.scheduler;
 
 import com.backend.domain.order.entity.OrderStatus;
 import com.backend.domain.order.entity.Orders;
