@@ -29,7 +29,7 @@ export default function OrdersPage() {
     async function loadOrders() {
       try {
         const res = await fetchApi("/api/orders", { method: "GET" })
-        setOrders(res.data)
+        setOrders(res.data) // ApiResponse 구조라면 .data
       } catch (err) {
         console.error("주문 조회 실패:", err)
       } finally {
@@ -42,10 +42,11 @@ export default function OrdersPage() {
   if (loading) return <div className="p-6">불러오는 중...</div>
 
   const sortedOrders = [...orders].sort(
-    (a, b) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()
+    (a, b) =>
+      new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime()
   )
 
-// ✅ 주문 취소 → status 변경 + 버튼 변경
+  // ✅ 주문 취소 → status 변경 + 버튼 변경
   const handleCancel = async (orderId: number) => {
     try {
       await fetchApi(`/api/orders/${orderId}/cancel`, {
@@ -82,21 +83,17 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white p-4">
-        <h1 className="text-xl font-bold">카페 원두</h1>
-      </header>
+      {/* 헤더는 나중에 <Header /> 로 대체 */}
+      <header />
 
       <main className="max-w-3xl mx-auto py-10 px-4">
         <div className="flex items-center gap-2 mb-6">
-          <Link href="/" className="text-sm text-gray-600">
-            ← 홈으로 돌아가기
-          </Link>
-          <h1 className="text-2xl font-bold ml-4">주문내역</h1>
+          <h1 className="text-2xl font-bold ml-4">주문 내역</h1>
         </div>
 
         {sortedOrders.length === 0 ? (
           <div className="text-center py-16">
-            <h2 className="text-2xl font-bold mb-2">주문내역이 없습니다</h2>
+            <h2 className="text-2xl font-bold mb-2">주문 내역이 없습니다</h2>
             <p className="text-gray-500 mb-6">첫 주문을 시작해보세요</p>
             <Link href="/">
               <button className="px-4 py-2 border rounded bg-black text-white">
@@ -116,11 +113,10 @@ export default function OrdersPage() {
                     주문번호 #{order.orderId}
                   </h2>
                   <span
-                    className={`text-sm border px-2 py-0.5 rounded ${
-                      order.status === "CANCELED"
-                        ? "text-red-600 border-red-600"
-                        : "text-green-600 border-green-600"
-                    }`}
+                    className={`text-sm border px-2 py-0.5 rounded ${order.status === "CANCELED"
+                      ? "text-red-600 border-red-600"
+                      : "text-green-600 border-green-600"
+                      }`}
                   >
                     {order.status}
                   </span>
@@ -140,25 +136,28 @@ export default function OrdersPage() {
                   {order.items.map((item, idx) => (
                     <li
                       key={`${order.orderId}-${idx}`}
-                      className="flex items-center gap-4 py-2 border-b"
-                    >
+                      className="flex items-center gap-4 py-2 border-b">
+                      {/* 상품 이미지 */}
                       <img
                         src={item.imageUrl}
                         alt={item.productName}
                         className="w-16 h-16 object-cover rounded"
                       />
+
+                      {/* 상품명 + 수량 */}
                       <div className="flex-1">
                         <p className="font-medium">{item.productName}</p>
-                        <p className="text-sm text-gray-500">
-                          {item.quantity}개
-                        </p>
+                        <p className="text-sm text-gray-500">{item.quantity}개</p>
                       </div>
+
+                      {/* 가격 */}
                       <div className="font-semibold">
                         {item.orderPrice.toLocaleString()}원
                       </div>
                     </li>
                   ))}
                 </ul>
+
 
                 {/* 버튼 영역 */}
                 <div className="flex gap-2 mt-4">
@@ -171,14 +170,19 @@ export default function OrdersPage() {
                   {order.status === "CANCELED" ? (
                     <button
                       className="flex-1 w-full border rounded py-2 text-sm bg-gray-50 hover:bg-gray-100 text-gray-600 text-center"
-                      onClick={() => handleDelete(order.orderId, order.paymentId)}
+                      onClick={() => handleDelete(order.orderId)}
                     >
                       삭제
                     </button>
                   ) : (
                     <button
-                      className="flex-1 w-full border rounded py-2 text-sm bg-red-50 hover:bg-red-100 text-red-600 text-center"
-                      onClick={() => handleCancel(order.orderId, order.paymentId)}
+                      disabled={order.status === "COMPLETED"}
+                      className={`flex-1 w-full border rounded py-2 text-sm text-center
+      ${order.status === "COMPLETED"
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          : "bg-red-50 hover:bg-red-100 text-red-600"
+                        }`}
+                      onClick={() => handleCancel(order.orderId)}
                     >
                       취소
                     </button>

@@ -1,3 +1,4 @@
+// src/app/payment/page.tsx
 "use client"
 
 import { useEffect, useState } from "react"
@@ -112,11 +113,11 @@ export default function CheckoutPage() {
         }),
       })
 
-      // 3. 주문 상세로 이동
-      router.push(`/orders`)
+      // 3. 주문 성공 페이지로로 이동
+      router.push(`/payment/success?orderId=${orderId}`)
     } catch (err) {
       console.error("주문/결제 실패:", err)
-      alert("주문에 실패했습니다.")
+      router.push(`/payment/fail`)
     }
   }
 
