@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/client";
 
 interface Menu {
@@ -14,8 +15,9 @@ interface Menu {
 
 export default function Home() {
   const [menus, setMenus] = useState<Menu[]>([]);
+  const [showToast, setShowToast] = useState(false);
+  const router = useRouter();
 
-  // 메뉴 조회
   useEffect(() => {
     fetchApi("/api/menus")
       .then((data) => {
@@ -24,22 +26,21 @@ export default function Home() {
       .catch((err) => console.error("메뉴 불러오기 실패:", err));
   }, []);
 
-  // 장바구니 담기
-const handleAddToCart = async (menuId: number) => {
-  try {
-    await fetchApi("/api/carts/items", {
-      method: "POST",
-      body: JSON.stringify({
-        menuId: menuId,
-        quantity: 1
-      }),
-    });
-    alert("장바구니에 담겼습니다!");
-  } catch (err) {
-    console.error("장바구니 추가 실패:", err);
-    alert("장바구니 담기 실패 😢");
-  }
-};
+  const handleAddToCart = async (menuId: number) => {
+    try {
+      await fetchApi("/api/carts/items", {
+        method: "POST",
+        body: JSON.stringify({ menuId, quantity: 1 }),
+      });
+
+      // 토스트 보이기
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error("장바구니 추가 실패:", err);
+      alert("장바구니 담기 실패 😢");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white">
@@ -72,7 +73,9 @@ const handleAddToCart = async (menuId: number) => {
             {/* 내용 */}
             <div className="p-4 flex flex-col gap-2 flex-grow">
               <h3 className="text-black font-semibold">{menu.name}</h3>
-              <p className="text-sm text-gray-400 truncate" title={menu.description} >{menu.description}</p>
+              <p className="text-sm text-gray-400 truncate" title={menu.description}>
+                {menu.description}
+              </p>
               <p className="text-black font-bold mt-auto">
                 {menu.price.toLocaleString()}원
               </p>
@@ -93,6 +96,21 @@ const handleAddToCart = async (menuId: number) => {
           </div>
         ))}
       </div>
+
+      {/* 토스트 (하단 고정) */}
+      {showToast && (
+        <div className="fixed bottom-4 inset-x-0 flex justify-center">
+          <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-4">
+            <span>장바구니에 담겼습니다 🛒</span>
+            <button
+              onClick={() => router.push("/cart")}
+              className="bg-white text-black px-3 py-1 rounded text-sm"
+            >
+              장바구니로 이동
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

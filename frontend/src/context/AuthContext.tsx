@@ -8,6 +8,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 type User = {
   userId: number;
   email: string; // username 대신 email 사용
+  level: number;
 };
 
 type AuthContextType = {

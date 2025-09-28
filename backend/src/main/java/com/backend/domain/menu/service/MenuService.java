@@ -24,7 +24,7 @@ public class MenuService {
 
     // 전체 메뉴 조회(사용자)
     public ApiResponse<List<MenuResponse>> getAllMenu() {
-        List<MenuResponse> menus = menuRepository.findByIsSoldOutFalse().stream()
+        List<MenuResponse> menus = menuRepository.findAll().stream()
                 .map(MenuResponse::from)
                 .toList();
 

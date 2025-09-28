@@ -30,6 +30,10 @@ export function Header() {
       <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
         <Link href="/menu" className="hover:text-primary">홈</Link>
         <Link href="/orders" className="hover:text-primary">주문내역</Link>
+        {/* 관리자 전용 메뉴 */}
+        {user?.level === 0 && (
+          <Link href="/admin" className="hover:text-primary">관리자 대시보드</Link>
+        )}
       </nav>
       <div className="flex items-center gap-4">
         {isLoading ? (
