@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class BaseInitData {
 
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     CommandLineRunner initData() {
@@ -24,7 +26,7 @@ public class BaseInitData {
             if (userRepository.getUsersByEmail("admin@example.com").isEmpty()) {
                 Users admin = new Users(
                         "admin@example.com",
-                        "admin1234", // 평문 비밀번호
+                        passwordEncoder.encode("admin1234"), // 암호화 비밀번호
                         "010-1234-5678",
                         0 // 관리자
                 );
@@ -36,7 +38,7 @@ public class BaseInitData {
             if (userRepository.getUsersByEmail("user@example.com").isEmpty()) {
                 Users user = new Users(
                         "user@example.com",
-                        "user1234", // 평문 비밀번호
+                        passwordEncoder.encode("user1234"), // 평문 비밀번호
                         "010-1234-1111",
                         1 // 일반 사용자
                 );

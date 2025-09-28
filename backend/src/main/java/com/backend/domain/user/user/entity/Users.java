@@ -7,12 +7,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -26,14 +25,14 @@ public class Users extends BaseEntity {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @Column(length = 15, nullable = false)
     private String phoneNumber;
 
     private int level;
-
+    @Column(unique = true)
     private String apiKey;
 
     @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE} , orphanRemoval = true)
@@ -82,5 +81,13 @@ public class Users extends BaseEntity {
             }
         }
         return Optional.empty();
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if(this.level == 0){
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        return authorities;
     }
 }
