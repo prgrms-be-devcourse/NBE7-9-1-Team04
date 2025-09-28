@@ -1,15 +1,16 @@
 import type { NextConfig } from "next";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // 이 부분을 추가해주세요!
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**.public.blob.vercel-storage.com',
+        protocol: "https",
+        hostname: "i.postimg.cc", // ✅ postimg 도메인 허용
       },
-      // 만약 다른 도메인을 사용한다면 여기에 추가하면 됩니다.
+      {
+        protocol: "https",
+        hostname: "**.public.blob.vercel-storage.com", // 기존 설정 유지
+      },
     ],
   },
 };
