@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/client";
+import { useAuth } from "@/context/AuthContext"; // AuthContext 가져오기
 
 interface Menu {
   menuId: number;
@@ -18,20 +19,31 @@ export default function Home() {
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
 
+  const { refetch } = useAuth(); // 전역 refetch 불러오기 (user, cartCount 갱신용)
+
+  // 메뉴 불러오기
   useEffect(() => {
     fetchApi("/api/menus")
       .then((data) => {
-        if (data?.data) setMenus(data.data);
+        if (Array.isArray(data?.data)) setMenus(data.data);
+        else setMenus([]);
       })
-      .catch((err) => console.error("메뉴 불러오기 실패:", err));
+      .catch((err) => {
+        console.error("메뉴 불러오기 실패:", err);
+        setMenus([]);
+      });
   }, []);
 
+  // 장바구니 담기
   const handleAddToCart = async (menuId: number) => {
     try {
       await fetchApi("/api/carts/items", {
         method: "POST",
         body: JSON.stringify({ menuId, quantity: 1 }),
       });
+
+      // 장바구니 리패치
+      await refetch();
 
       // 토스트 보이기
       setShowToast(true);
@@ -73,7 +85,10 @@ export default function Home() {
             {/* 내용 */}
             <div className="p-4 flex flex-col gap-2 flex-grow">
               <h3 className="text-black font-semibold">{menu.name}</h3>
-              <p className="text-sm text-gray-400 truncate" title={menu.description}>
+              <p
+                className="text-sm text-gray-400 truncate"
+                title={menu.description}
+              >
                 {menu.description}
               </p>
               <p className="text-black font-bold mt-auto">

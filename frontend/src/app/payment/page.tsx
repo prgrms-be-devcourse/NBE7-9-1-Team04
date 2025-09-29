@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { fetchApi } from "@/lib/client"
+import Link from "next/link"
 
 type Address = {
   addressId: number
@@ -71,6 +72,8 @@ export default function CheckoutPage() {
     setSelectedId(Number(e.target.value))
   }
 
+
+
   // 주문 생성
   const handleOrder = async () => {
     if (selectedId === null) {
@@ -83,6 +86,10 @@ export default function CheckoutPage() {
     }
 
     try {
+      // 배송비 계산
+      const shippingFee = cart.grandTotal < 50000 ? 3000 : 0
+      const totalAmount = cart.grandTotal + shippingFee
+
       // cartItems → items 변환
       const items = cart.cartItems.map((c) => ({
         productId: c.menuId,       // ✅ DTO에서 요구하는 필드
@@ -95,9 +102,9 @@ export default function CheckoutPage() {
       const orderRes = await fetchApi("/api/orders", {
         method: "POST",
         body: JSON.stringify({
-          amount: cart.grandTotal, // ✅ 총 결제 금액
-          addressId: selectedId,   // ✅ 배송지 ID
-          items,                   // ✅ 주문 상세
+          amount: totalAmount,   // ✅ 배송비 포함 금액
+          addressId: selectedId,
+          items,
         }),
       })
 
@@ -108,7 +115,7 @@ export default function CheckoutPage() {
         method: "POST",
         body: JSON.stringify({
           orderId,
-          paymentAmount: cart.grandTotal,
+          paymentAmount: totalAmount, // ✅ 배송비 포함 금액
           paymentMethod: "CARD",
         }),
       })
@@ -131,7 +138,7 @@ export default function CheckoutPage() {
           <h2 className="text-xl font-bold mb-4">배송 정보</h2>
 
           {/* 주소 선택 */}
-          {addresses.length > 0 && (
+          {addresses.length > 0 ? (
             <div className="mb-4">
               <label className="block text-sm mb-1">배송지 선택</label>
               <select
@@ -146,6 +153,21 @@ export default function CheckoutPage() {
                 ))}
               </select>
             </div>
+          ) : (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+            <h3 className="font-semibold mb-2 text-red-800">주소 등록 안내내</h3>
+            <ul className="text-sm text-red-700 space-y-1 text-left">
+              <li>• 마이페이지에서 주소를 등록해 주세요</li>
+              <Link href="/user/address/add">
+                <button className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  주소 등록하러 가기기
+                </button>
+              </Link>
+            </ul>
+          </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
@@ -194,14 +216,14 @@ export default function CheckoutPage() {
             {/* 합계 */}
             <div className="border-t pt-3 flex justify-between font-bold">
               <span>총 결제 금액</span>
-              <span>{cart?.grandTotal}원</span>
+              <span>{(cart?.grandTotal ?? 0) + (cart && cart.grandTotal < 50000 ? 3000 : 0)}원</span>
             </div>
 
             <button
               onClick={handleOrder}
               className="w-full py-3 mt-4 rounded bg-black text-white font-semibold hover:bg-gray-800"
             >
-              {cart?.grandTotal}원 결제하기
+              {(cart?.grandTotal ?? 0) + (cart && cart.grandTotal < 50000 ? 3000 : 0)}원 결제하기
             </button>
           </div>
         </div>

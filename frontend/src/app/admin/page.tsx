@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/client";
+import { useAuth } from "@/context/AuthContext";
 
 interface Menu {
   menuId?: number;
@@ -13,18 +15,33 @@ interface Menu {
 }
 
 export default function AdminDashboard() {
+  const { user, isLoading } = useAuth();
   const [menus, setMenus] = useState<Menu[]>([]);
+  const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingMenu, setEditingMenu] = useState<Menu | null>(null);
 
-  // 메뉴 불러오기(관리자 조회)
-  useEffect(() => {
-    fetchApi("/api/admin/menus")
-      .then((data) => {
-        if (data?.data) setMenus(data.data);
-      })
-      .catch((err) => console.error("메뉴 불러오기 실패:", err));
-  }, []);
+// 로딩 처리
+if (isLoading) {
+  return <div className="p-6 text-center">로딩 중...</div>;
+}
+
+// 관리자 권한 없는 경우
+if (!user || user.level !== 0) {
+  if (typeof window !== "undefined") {
+    router.push("/menu"); // 홈으로 리다이렉트
+  }
+  return null; // 화면에는 아무것도 안 그림
+}
+
+// 메뉴 불러오기
+useEffect(() => {
+  fetchApi("/api/admin/menus")
+    .then((data) => {
+      if (Array.isArray(data?.data)) setMenus(data.data);
+    })
+    .catch((err) => console.error("메뉴 불러오기 실패:", err));
+}, []);
 
   // 메뉴 추가
   const handleCreate = async (menu: Menu) => {
@@ -42,11 +59,11 @@ export default function AdminDashboard() {
         body: JSON.stringify(body),
       });
 
-      setMenus((prev) => [...prev, newMenu.data]);
+      setMenus((prev) => [...prev, newMenu.data as Menu]);
       setShowCreateForm(false);
     } catch (err: any) {
       console.error("생성 실패:", err);
-      alert(err.message);
+      alert(err?.message ?? "메뉴 생성 중 오류가 발생했습니다.");
     }
   };
 
@@ -168,16 +185,14 @@ export default function AdminDashboard() {
                 </span>
                 <button
                   onClick={() => handleToggleSoldOut(menu.menuId!, menu.isSoldOut)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    menu.isSoldOut 
-                      ? 'bg-gray-300 focus:ring-gray-500' 
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${menu.isSoldOut
+                      ? 'bg-gray-300 focus:ring-gray-500'
                       : 'bg-green-500 focus:ring-green-500'
-                  }`}
+                    }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                      menu.isSoldOut ? 'translate-x-1' : 'translate-x-6'
-                    }`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${menu.isSoldOut ? 'translate-x-1' : 'translate-x-6'
+                      }`}
                   />
                 </button>
               </div>
@@ -216,10 +231,10 @@ function CreateMenuForm({
   onSave: (menu: Menu) => void;
 }) {
   const [form, setForm] = useState<Menu>({
-    name: "콜롬비아 수프리모", 
-    price: 25000, 
-    isSoldOut: false, 
-    description: "균형잡힌 맛과 부드러운 바디감", 
+    name: "콜롬비아 수프리모",
+    price: 25000,
+    isSoldOut: false,
+    description: "균형잡힌 맛과 부드러운 바디감",
     imageUrl: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/colombian-coffee-beans-package-avUaPASEOeFsLXIh0tlGy3QLvNNwkP.jpg",
   });
 
@@ -279,16 +294,14 @@ function CreateMenuForm({
             <button
               type="button"
               onClick={() => setForm(prev => ({ ...prev, isSoldOut: !prev.isSoldOut }))}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                form.isSoldOut 
-                  ? 'bg-red-500 focus:ring-red-500' 
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${form.isSoldOut
+                  ? 'bg-red-500 focus:ring-red-500'
                   : 'bg-green-500 focus:ring-green-500'
-              }`}
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                  form.isSoldOut ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${form.isSoldOut ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -338,7 +351,7 @@ function EditMenuForm({
   return (
     <div className="border rounded-lg shadow-md p-6 mb-6 bg-white">
       <h2 className="text-xl font-semibold mb-4 text-black">메뉴 수정</h2>
-  
+
       <div className="space-y-4">
         <input
           type="text"
@@ -372,7 +385,7 @@ function EditMenuForm({
           placeholder="이미지 URL"
           className="w-full border border-gray-300 p-3 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
         />
-  
+
         {/* 품절 여부 토글 - 개선된 버전 */}
         <div className="flex items-center justify-between py-2">
           <span className="text-sm text-gray-700 font-medium">품절 여부</span>
@@ -383,22 +396,20 @@ function EditMenuForm({
             <button
               type="button"
               onClick={() => setForm(prev => ({ ...prev, isSoldOut: !prev.isSoldOut }))}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                form.isSoldOut 
-                  ? 'bg-red-500 focus:ring-red-500' 
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${form.isSoldOut
+                  ? 'bg-red-500 focus:ring-red-500'
                   : 'bg-green-500 focus:ring-green-500'
-              }`}
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                  form.isSoldOut ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${form.isSoldOut ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
         </div>
       </div>
-  
+
       <div className="flex justify-end gap-3 mt-6">
         <button
           onClick={onCancel}
