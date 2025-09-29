@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { fetchApi } from "@/lib/client"
 import { Order, OrderItem, ORDER_STATUS } from "@/types/order";
-import { OrderItemCard , EmptyOrderState} from "@/components/order/order-item";
+import { OrderItemCard , EmptyOrderState} from "@/components/order-item";
 
 
 export default function OrdersPage() {

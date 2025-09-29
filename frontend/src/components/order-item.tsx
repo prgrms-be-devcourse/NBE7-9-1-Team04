@@ -1,36 +1,29 @@
 "use client"
 
 import Link from "next/link"
-import { Order, ORDER_STATUS,OrderItemCardProps } from "@/types/order"
+import { Order, ORDER_STATUS, OrderItemCardProps } from "@/types/order"
+
+// ✅ 상태별 텍스트 + 색상 클래스 (AdminOrderCard 기준으로 통일)
+const getStatusInfo = (status: string) => {
+  const statusMap: Record<string, { text: string; className: string }> = {
+    CREATED: { text: "결제 실패", className: "bg-red-50 text-red-600" },
+    PAID: { text: "결제 완료", className: "bg-blue-50 text-blue-600" },
+    COMPLETED: { text: "배송 완료", className: "bg-gray-200 text-gray-600" },
+    CANCELED: { text: "주문 취소", className: "bg-red-50 text-red-600" },
+  }
+  return statusMap[status] || { text: status, className: "bg-gray-200 text-gray-600" }
+}
 
 export function OrderItemCard({ order, onCancel, onDelete }: OrderItemCardProps) {
-  // 상태 텍스트 변환
-  const getStatusText = (status: string) => {
-    const statusMap: Record<string, string> = {
-      CREATED: "결제 실패",
-      PAID: "결제 완료",
-      COMPLETED: "배송 완료",
-      CANCELED: "주문 취소",
-    }
-    return statusMap[status] || status
-  }
-
-  // 상태별 색상 클래스
-  const statusClass =
-    order.status === ORDER_STATUS.CANCELED
-      ? "text-red-600 border-red-600"
-      : order.status === ORDER_STATUS.CREATED
-      ? "text-red-600 border-red-600"
-      : order.status === ORDER_STATUS.COMPLETED
-      ? "text-gray-600 border-gray-400"
-      : "text-green-600 border-green-600"
+  const statusInfo = getStatusInfo(order.status)
 
   return (
     <div className="bg-white border rounded-lg shadow-sm p-6">
+      {/* 상단 */}
       <div className="flex justify-between items-center mb-2">
         <h2 className="font-bold text-lg">주문번호 #{order.orderId}</h2>
-        <span className={`text-sm border px-2 py-0.5 rounded ${statusClass}`}>
-          {getStatusText(order.status)}
+        <span className={`text-sm px-2 py-0.5 rounded ${statusInfo.className}`}>
+          {statusInfo.text}
         </span>
       </div>
 
@@ -42,9 +35,13 @@ export function OrderItemCard({ order, onCancel, onDelete }: OrderItemCardProps)
       </p>
       <p className="text-sm text-gray-600 mb-4">배송주소: {order.address}</p>
 
+      {/* 상품 리스트 */}
       <ul className="mt-2 text-sm text-gray-600 space-y-3">
         {order.items.map((item, idx) => (
-          <li key={`${order.orderId}-${idx}`} className="flex items-center gap-4 py-2 border-b">
+          <li
+            key={`${order.orderId}-${idx}`}
+            className="flex items-center gap-4 py-2 border-b"
+          >
             <img
               src={item.imageUrl}
               alt={item.productName}
@@ -87,9 +84,10 @@ export function OrderItemCard({ order, onCancel, onDelete }: OrderItemCardProps)
           <button
             disabled={order.status === ORDER_STATUS.COMPLETED}
             className={`flex-1 w-full border rounded py-2 text-sm text-center
-              ${order.status === ORDER_STATUS.COMPLETED
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-red-50 hover:bg-red-100 text-red-600"
+              ${
+                order.status === ORDER_STATUS.COMPLETED
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-red-50 hover:bg-red-100 text-red-600"
               }`}
             onClick={() => onCancel(order.orderId)}
           >
