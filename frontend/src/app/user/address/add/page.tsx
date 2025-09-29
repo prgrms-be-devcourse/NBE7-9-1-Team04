@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { fetchApi } from "@/lib/client";
 import Link from "next/link";
 
 export default function AddressPage() {
@@ -42,10 +43,8 @@ export default function AddressPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/users/address/add", {
+      const res = await fetchApi("/api/users/address/add", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           address,
           addressDetail,
@@ -53,10 +52,8 @@ export default function AddressPage() {
         }),
       });
 
-      if (!res.ok) throw new Error("주소 저장 실패");
-
       alert("주소가 저장되었습니다!");
-      router.push("http://localhost:3000/user/address/list");
+      router.push("/user/address/list");
     } catch (err) {
       console.error(err);
       alert("주소 저장 중 오류가 발생했습니다.");

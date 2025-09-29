@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchApi } from "@/lib/client";
+
 export default function AddressListPage() {
   const [addresses, setAddresses] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -10,11 +12,11 @@ export default function AddressListPage() {
   // 주소 목록 불러오기
   const fetchAddresses = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/users/address/list", {
+      const res = await fetchApi("/api/users/address/list", {
         credentials: "include",
       });
-      if (!res.ok) throw new Error("주소 목록 불러오기 실패");
-      const data = await res.json();
+      
+      const data = res;
       setAddresses(data.data); // data 안의 배열
     } catch (err) {
       console.error(err);
@@ -48,13 +50,10 @@ export default function AddressListPage() {
 
   const handleSave = async (addressId) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/users/address/modify/${addressId}`, {
+      const res = await fetchApi(`/api/users/address/modify/${addressId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
-      if (!res.ok) throw new Error("주소 수정 실패");
       await fetchAddresses(); // 갱신
       setEditingId(null);
       setFormData({ address: "", addressDetail: "", postNumber: "" });
@@ -69,11 +68,9 @@ export default function AddressListPage() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8080/api/users/address/delete/${addressId}`, {
-        method: "DELETE",
-        credentials: "include",
+      const res = await fetchApi(`/api/users/address/delete/${addressId}`, {
+        method: "DELETE"
       });
-      if (!res.ok) throw new Error("주소 삭제 실패");
       await fetchAddresses(); // 최신 데이터 갱신
     } catch (err) {
       console.error(err);
@@ -135,7 +132,7 @@ export default function AddressListPage() {
                    <button
                      onClick={() => handleSave(addr.addressId)}
                      disabled={!formData.address || !formData.addressDetail || !formData.postNumber}
-                     className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded disabled:bg-gray-400"
+                     className="flex-1 bg-black hover:bg-green-600 text-white py-2 rounded disabled:bg-gray-400"
                    >
                      주소 수정하기
                    </button>
@@ -161,7 +158,7 @@ export default function AddressListPage() {
                        postNumber: addr.postNumber,
                      });
                    }}
-                   className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+                   className="flex-1  bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
                  >
                    주소 수정
                  </button>
@@ -181,11 +178,11 @@ export default function AddressListPage() {
         )}
       <div className=" flex mt-4">
         <Link href="/user/address/add"
-          className="bg-black text-white px-4 py-2 rounded m-2">
+          className="bg-black text-white px-4 py-2 rounded m-2 hover:bg-green-800">
           주소 추가
         </Link>
         <Link href="/payment"
-          className="bg-black text-white px-4 py-2 rounded m-2">
+          className="bg-black text-white px-4 py-2 rounded m-2 hover:bg-blue-800">
           결제하러 가기
         </Link>
       </div>
