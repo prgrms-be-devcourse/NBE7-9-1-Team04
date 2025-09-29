@@ -2,6 +2,9 @@ package com.backend.global.init;
 
 import com.backend.domain.menu.entity.Menu;
 import com.backend.domain.menu.repository.MenuRepository;
+import com.backend.domain.user.address.dto.AddressDto;
+import com.backend.domain.user.address.entity.Address;
+import com.backend.domain.user.address.repository.AddressRepository;
 import com.backend.domain.user.user.entity.Users;
 import com.backend.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class BaseInitData {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final MenuRepository menuRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,6 +47,18 @@ public class BaseInitData {
                         1 // 일반 사용자
                 );
                 userRepository.save(user);
+
+                Address adress = new Address(
+                        user,
+                        new AddressDto(
+                            null,
+                                    user.getUserId(),
+                            "서울시 강남구 테헤란로",
+                            "123번길 456호",
+                            "12345"
+                        )
+                );
+                addressRepository.save(adress);
                 System.out.println("기본 사용자 계정 생성 완료");
             }
 

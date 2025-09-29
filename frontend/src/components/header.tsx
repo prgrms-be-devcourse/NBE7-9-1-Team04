@@ -26,48 +26,59 @@ export function Header() {
 
   return (
     <header className="flex items-center justify-between h-16 px-4 border-b bg-background text-foreground">
+      {/* 로고는 왼쪽에 고정 */}
       <Link href="/menu" className="flex items-center gap-2 text-lg font-semibold">
-        카페 원두
+        ☕ Grids & Circles
       </Link>
-      <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
-        <Link href="/menu" className="hover:text-primary">홈</Link>
-        {/*관리자, 사용자 로그인에 따른 주문내역 분류 */}
-        {user && (
-          <Link
-            href={user.level === 0 ? "/orders/admin" : "/orders"}
-            className="hover:text-primary"
-          >
-            주문내역
-          </Link>
-        )}
-        {/* 관리자 전용 메뉴 */}
-        {user?.level === 0 && (
-          <Link href="/admin" className="hover:text-primary">관리자 대시보드</Link>
-        )}
-      </nav>
-      <div className="flex items-center gap-4">
-        {isLoading ? (
-          <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
-        ) : user ? (
-          <>
-            {/* ✅ 이 부분을 Optional Chaining으로 수정했습니다. */}
-            <Link href="/user/my" className="text-sm hover:text-primary">{user?.userEmail?.split('@')[0] || '사용자'}님</Link>
-            <button onClick={handleLogout} className="text-sm hover:text-primary">
-              로그아웃
-            </button>
-          </>
-        ) : (
-          <Link href="/user" className="text-sm hover:text-primary">로그인</Link>
-        )}
-
-        <Link href="/cart" className="relative">
-          <span className="text-2xl">🛒</span>
-          {user && cartCount > 0 && (
-            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-              {cartCount}
-            </span>
+      {/* 오른쪽 영역: 네비게이션 + 사용자 정보 + 장바구니 */}
+      <div className="flex items-center gap-6">
+        {/* 네비게이션 메뉴 */}
+        <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
+          {user && (
+            <Link
+              href={user.level === 0 ? "/orders/admin" : "/orders"}
+              className="hover:text-primary"
+            >
+              주문내역
+            </Link>
           )}
-        </Link>
+          {user?.level === 0 && (
+            <Link href="/admin" className="hover:text-primary">
+              관리자 대시보드
+            </Link>
+          )}
+        </nav>
+
+        {/* 구분선 추가 */}
+        {user && <div className="hidden md:block h-4 w-px bg-gray-300" />}
+
+        {/* 사용자 정보 영역 */}
+        <div className="flex items-center gap-4">
+          {isLoading ? (
+            <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+          ) : user ? (
+            <>
+              <Link href="/user/my" className="text-sm hover:text-primary">
+                {user?.userEmail?.split('@')[0] || '사용자'}님
+              </Link>
+              <button onClick={handleLogout} className="text-sm hover:text-primary">
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <Link href="/user" className="text-sm hover:text-primary">로그인</Link>
+          )}
+
+          {/* 장바구니 */}
+          <Link href="/cart" className="relative">
+            <span className="text-2xl">🛒</span>
+            {user && cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
     </header>
   );

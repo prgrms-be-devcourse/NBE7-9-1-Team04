@@ -4,6 +4,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { fetchApi } from "@/lib/client"
+import AuthGuard from "@/components/auth/AuthGuard";
 
 type PaymentDetail = {
   paymentId: number
@@ -14,7 +15,16 @@ type PaymentDetail = {
   modifyDate: string
 }
 
-export default function PaymentDetailPage() {
+// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
+export default function CartPage() {
+  return (
+    <AuthGuard>
+      <PaymentDetailPage />
+    </AuthGuard>
+  );
+}
+
+function PaymentDetailPage() {
   const { paymentId } = useParams()
   const [payment, setPayment] = useState<PaymentDetail | null>(null)
   const [loading, setLoading] = useState(true)
