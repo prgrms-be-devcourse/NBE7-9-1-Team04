@@ -1,10 +1,19 @@
-// src/app/payment/fail/page.tsx
 "use client"
 
+import { useAuth } from "@/context/AuthContext"; 
 import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function PaymentFailPage() {
+  const { refetch } = useAuth();
   const router = useRouter()
+
+  useEffect(() => {
+    async function fetchData() {
+      await refetch();
+    }
+    fetchData();
+  }, [refetch])
 
   return (
     <div className="min-h-screen bg-gray-50">

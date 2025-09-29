@@ -1,5 +1,6 @@
 "use client"
 
+import { useAuth } from "@/context/AuthContext"; 
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/client"
@@ -30,6 +31,7 @@ interface ApiResponse<T> {
 }
 
 export default function OrderSuccessPage() {
+  const { refetch } = useAuth();
   const router = useRouter()
   const searchParams = useSearchParams()
   const orderId = searchParams.get('orderId')
@@ -43,6 +45,8 @@ export default function OrderSuccessPage() {
       try {
         setLoading(true)
         setError(null)
+        
+        await refetch();
 
         const res = await fetchApi(`/api/orders/${orderId}`, { method: "GET" })
         setOrder(res.data)

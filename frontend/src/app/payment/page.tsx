@@ -1,6 +1,7 @@
 // src/app/payment/page.tsx
 "use client"
 
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { fetchApi } from "@/lib/client"
@@ -43,7 +44,8 @@ export default function CheckoutPage() {
   const [user, setUser] = useState<User | null>(null)
 
   const [cart, setCart] = useState<CartResponse | null>(null)
-
+  const { refetch } = useAuth();
+  
   // 초기 데이터 불러오기
   useEffect(() => {
     async function loadData() {
@@ -122,6 +124,7 @@ export default function CheckoutPage() {
 
       // 3. 주문 성공 페이지로로 이동
       router.push(`/payment/success?orderId=${orderId}`)
+      await refetch();
     } catch (err) {
       console.error("주문/결제 실패:", err)
       router.push(`/payment/fail`)
@@ -163,7 +166,7 @@ export default function CheckoutPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
-                  주소 등록하러 가기기
+                  주소 등록하러 가기
                 </button>
               </Link>
             </ul>
