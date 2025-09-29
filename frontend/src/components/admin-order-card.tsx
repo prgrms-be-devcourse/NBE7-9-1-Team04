@@ -92,7 +92,12 @@ export function AdminOrderCard({ order, onUpdateStatus }: Props) {
         {/* 배송 처리 */}
         <button
           onClick={() => onUpdateStatus(order.orderId, "COMPLETED")}
-          className="flex-1 border rounded py-2 text-sm bg-green-50 hover:bg-green-100"
+          disabled={order.status === "COMPLETED"}
+          className={`flex-1 border rounded py-2 text-sm text-center
+    ${order.status === "COMPLETED"
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : "bg-green-50 hover:bg-green-100"
+            }`}
         >
           배송 처리(COMPLETED)
         </button>
