@@ -4,7 +4,8 @@ import { useState,useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { fetchApi } from "@/lib/client"
 import { useAuth } from "@/context/AuthContext"
-import Link from "next/link";
+import Link from "next/link"
+
 export default function LoginPage() {
   const router = useRouter()
   const { refetch } = useAuth() 
@@ -15,10 +16,10 @@ export default function LoginPage() {
 
 // 페이지 로딩 시 쿠키 확인
 useEffect(() => {
-  const res = fetch("http://localhost:8080/api/users/my", {
+  const res = fetchApi("/api/users/my", {
     credentials: "include", // 쿠키 전달
   });
-  if (res.ok) {
+  if (res.data) {
     setShowLogoutModal(true)
   }
 }, [])
@@ -54,7 +55,6 @@ const handleCancelLogout = () => {
     // ✅ 로그인 후 AuthContext 갱신
     await refetch()
     
-
     // menu 페이지로 이동
     router.push("/menu")
     } catch (err: any) {

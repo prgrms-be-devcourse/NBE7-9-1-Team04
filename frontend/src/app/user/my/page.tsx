@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { fetchApi } from "@/lib/client";
 import Link from "next/link";
+
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -12,13 +14,9 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/users/my", {
-          credentials: "include", // 쿠키 전달
-        });
-        if (!res.ok) throw new Error("Failed to fetch user info");
-        const data = await res.json();
-        setUser(data);
-        setPhoneInput(data.data.phoneNumber); // 초기값 세팅
+        const res = await fetchApi("/api/users/my", {method: "GET"});
+        setUser(res);
+        setPhoneInput(res.data.phoneNumber); // 초기값 세팅
       } catch (err) {
         console.error(err);
       } finally {
@@ -37,17 +35,12 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/users/modify", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // 쿠키 전달
+      const res = await fetchApi("/api/users/modify", {
+        method: "PUT",// 쿠키 전달
         body: JSON.stringify({ phoneNumber: phoneInput }),
       });
-      if (!res.ok) throw new Error("Failed to update phone number");
-
-      const updatedData = await res.json();
+     
+      const updatedData = await res;
 
       // 백엔드 응답 구조에 맞춰서 user state 업데이트
       setUser(updatedData);
@@ -110,7 +103,7 @@ export default function ProfilePage() {
               <>
                 <button
                   onClick={handleSave}
-                  className="bg-black text-white px-4 py-2 rounded hover:bg-blue-800"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                   수정하기
                 </button>
@@ -125,12 +118,12 @@ export default function ProfilePage() {
               <>
               <button
                 onClick={handleEditToggle}
-                className="bg-black text-white px-4 py-2 rounded hover:bg-blue-800 "
+                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-green-600"
               >
                 내 정보 수정
               </button>
               <Link href="/user/address/list"
-              className="bg-black text-white px-4 py-2 rounded hover:bg-green-800">
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-600">
               주소 목록
               </Link>
             </>

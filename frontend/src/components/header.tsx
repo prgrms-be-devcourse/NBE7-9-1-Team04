@@ -17,7 +17,7 @@ export function Header() {
       await fetchApi("/api/users/logout", { method: "GET" });
       alert("로그아웃 되었습니다.");
       await refetch();
-      router.push("/");
+      router.push("/user");
     } catch (error) {
       console.error("로그아웃 실패:", error);
       alert("로그아웃에 실패했습니다.");
