@@ -30,7 +30,8 @@ export default function AdminOrdersPage() {
   async function loadOrders() {
     try {
       const res = await fetchApi("/api/admin/orders", { method: "GET" })
-      setOrders(res.data)
+      setOrders(res.data as AdminOrder[])
+      console.log("주문 목록:", res.data)
     } catch (err) {
       console.error("주문 목록 조회 실패:", err)
     } finally {

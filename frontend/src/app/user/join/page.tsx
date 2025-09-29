@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { fetchApi } from "@/lib/client";
 import Link from "next/link";
 
 export default function SignupPage() {
@@ -32,13 +33,11 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/users/join", {
+      const res = await fetchApi("/api/users/join", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, phoneNumber }),
       });
 
-      if (!res.ok) throw new Error("회원가입 실패");
 
       setSuccess(true);
       setCountdown(3);
@@ -48,7 +47,7 @@ export default function SignupPage() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(interval);
-            router.push("http://localhost:3000/user/");
+            router.push("/user/");
           }
           return prev - 1;
         });

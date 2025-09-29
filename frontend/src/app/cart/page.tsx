@@ -6,8 +6,18 @@ import { fetchApi } from "@/lib/client";
 import { CartItemType, CartListType } from "@/types/cart";
 import CartItem from "@/components/cart-item";
 import CartSummary from "@/components/cart-summary";
+import AuthGuard from "@/components/auth/AuthGuard";
 
+// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
 export default function CartPage() {
+  return (
+    <AuthGuard>
+      <CartPageContent />
+    </AuthGuard>
+  );
+}
+
+function CartPageContent() {
   const [cart, setCart] = useState<CartListType | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -69,7 +79,6 @@ export default function CartPage() {
       }
     }
   };
-
 
   useEffect(() => {
     loadCart();
