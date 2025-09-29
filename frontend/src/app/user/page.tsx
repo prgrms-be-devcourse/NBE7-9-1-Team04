@@ -3,9 +3,11 @@
 import { useState,useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { fetchApi } from "@/lib/client"
-
+import { useAuth } from "@/context/AuthContext"
+import Link from "next/link";
 export default function LoginPage() {
   const router = useRouter()
+  const { refetch } = useAuth() 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -48,10 +50,15 @@ const handleCancelLogout = () => {
       alert("로그인 성공!")
       console.log("로그인 응답:", res)
 
-      // 로그인 후 주문내역으로 이동
-      router.push("/menu")
+     
+    // ✅ 로그인 후 AuthContext 갱신
+    await refetch()
+    
+
+    // menu 페이지로 이동
+    router.push("/menu")
     } catch (err: any) {
-      alert("로그인 실패: " + err.message)
+     alert("로그인 실패: " + err.message)
     } finally {
       setLoading(false)
     }
@@ -111,8 +118,13 @@ const handleCancelLogout = () => {
           disabled={loading}
           className="w-full bg-black text-white py-2 rounded"
         >
+          
           {loading ? "로그인 중..." : "로그인"}
         </button>
+        <Link href="user/join"
+          className="flex justify-center w-full bg-black text-white py-2 rounded">
+            회원 가입
+        </Link>
       </form>
     </div>
     </>

@@ -5,10 +5,12 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/client";
+import { useEffect, useState } from 'react';
 
 export function Header() {
   const { user, cartCount, isLoading, refetch } = useAuth();
   const router = useRouter();
+  
 
   const handleLogout = async () => {
     try {
@@ -41,9 +43,7 @@ export function Header() {
         ) : user ? (
           <>
             {/* ✅ 이 부분을 Optional Chaining으로 수정했습니다. */}
-            <span className="text-sm">
-              {user?.email?.split('@')[0] || '사용자'}님
-            </span>
+            <Link href="/user/my" className="text-sm hover:text-primary">{user?.userEmail?.split('@')[0] || '사용자'}님</Link>
             <button onClick={handleLogout} className="text-sm hover:text-primary">
               로그아웃
             </button>
