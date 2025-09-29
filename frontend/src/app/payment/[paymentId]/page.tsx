@@ -4,7 +4,6 @@ import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { fetchApi } from "@/lib/client"
-import AuthGuard from "@/components/auth/AuthGuard";
 
 type PaymentDetail = {
   paymentId: number
@@ -15,47 +14,53 @@ type PaymentDetail = {
   modifyDate: string
 }
 
-// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
-export default function CartPage() {
-  return (
-    <AuthGuard>
-      <PaymentDetailPage />
-    </AuthGuard>
-  );
+type UserInfo = {
+  userId: number
+  userEmail: string
+  phoneNumber: string
+  level: number // 0 = admin, 1 = 일반 사용자
 }
 
-function PaymentDetailPage() {
+export default function PaymentDetailPage() {
   const { paymentId } = useParams()
   const [payment, setPayment] = useState<PaymentDetail | null>(null)
+  const [user, setUser] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function loadPayment() {
+    async function loadData() {
       try {
+        // ✅ 결제 정보
         const res = await fetchApi(`/api/payments/${paymentId}`, { method: "GET" })
-        setPayment(res.data) // ApiResponse.data
+        setPayment(res.data)
+
+        // ✅ 사용자 정보
+        const userRes = await fetchApi("/api/users/my", { method: "GET" })
+        setUser(userRes.data) // ⚡ 여기서 user.level 확인 가능
       } catch (err) {
-        console.error("결제 조회 실패:", err)
+        console.error("데이터 조회 실패:", err)
       } finally {
         setLoading(false)
       }
     }
-    if (paymentId) loadPayment()
+    if (paymentId) loadData()
   }, [paymentId])
 
   if (loading) return <div className="p-6">결제 정보를 불러오는 중...</div>
   if (!payment) return <div className="p-6">결제 정보를 찾을 수 없습니다.</div>
 
-  // 상단에 status 변환 함수 추가
   const getPaymentStatusText = (status: string) => {
     const statusMap: Record<string, string> = {
       PENDING: "결제 전",
       COMPLETED: "결제 완료",
       FAILED: "결제 실패",
-      CANCELED: "결제 취소"
+      CANCELED: "결제 취소",
     }
     return statusMap[status] || status
   }
+
+  // ✅ admin 여부에 따라 분기
+  const orderPageHref = user?.level === 0 ? "/orders/admin" : "/orders"
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4">
@@ -88,7 +93,7 @@ function PaymentDetailPage() {
       </div>
 
       <div className="flex gap-4 mt-8">
-        <Link href="/orders">
+        <Link href={orderPageHref}>
           <button className="px-6 py-2 border rounded bg-gray-100 hover:bg-gray-200">
             주문내역 보기
           </button>
