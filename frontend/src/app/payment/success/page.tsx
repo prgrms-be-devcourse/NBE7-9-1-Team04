@@ -38,33 +38,33 @@ export default function OrderSuccessPage() {
   
   const [order, setOrder] = useState<OrderSummaryResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function updateAndLoadOrder() {
       try {
         setLoading(true)
-        setError(null)
         
         await refetch();
-
+  
         const res = await fetchApi(`/api/orders/${orderId}`, { method: "GET" })
         setOrder(res.data)
       } catch (err) {
         console.error("주문 처리 실패:", err)
-        setError(err instanceof Error ? err.message : '주문 정보를 가져오는데 실패했습니다.')
+        // 에러 발생 시 실패 페이지로 리다이렉트
+        router.push(`/order/failed?orderId=${orderId}`)
       } finally {
         setLoading(false)
       }
     }
-
+  
     if (orderId) {
       updateAndLoadOrder()
     } else {
-      setError("주문 번호가 없습니다.")
-      setLoading(false)
+      // orderId가 없는 경우도 실패 페이지로
+      router.push('/order/failed')
     }
-  }, [orderId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId]) // orderId만 의존성으로 유지
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
@@ -105,37 +105,9 @@ export default function OrderSuccessPage() {
     )
   }
 
-  // 에러 상태
-  if (error || !order) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <main className="max-w-2xl mx-auto py-10 px-6">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold mb-2">오류가 발생했습니다</h1>
-            <p className="text-gray-600 mb-8">
-              {error || "주문 정보를 찾을 수 없습니다."}
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Link href="/orders">
-                <button className="px-6 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">
-                  주문내역 보기
-                </button>
-              </Link>
-              <Link href="/">
-                <button className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800">
-                  홈으로 가기
-                </button>
-              </Link>
-            </div>
-          </div>
-        </main>
-      </div>
-    )
+  // order가 없으면 아무것도 렌더링하지 않음 (리다이렉트 처리 중)
+  if (!order) {
+    return null
   }
 
   return (
@@ -203,6 +175,32 @@ export default function OrderSuccessPage() {
                       <span className="font-medium">{item.orderPrice.toLocaleString()}원</span>
                     </div>
                   ))}
+                  
+                  {/* 상품 소계 */}
+                  <div className="flex justify-between text-sm pt-2 border-t">
+                    <span>상품 금액</span>
+                    <span className="font-medium">
+                      {order.items.reduce((sum, item) => sum + item.orderPrice, 0).toLocaleString()}원
+                    </span>
+                  </div>
+                  
+                  {/* 배송비 */}
+                  <div className="flex justify-between text-sm">
+                    <span>배송비</span>
+                    <span className="font-medium">
+                      {order.items.reduce((sum, item) => sum + item.orderPrice, 0) < 50000 
+                        ? '+3,000원' 
+                        : '무료'}
+                    </span>
+                  </div>
+                  
+                  {/* 총 결제 금액 */}
+                  <div className="flex justify-between text-sm pt-2 border-t font-bold">
+                    <span>총 결제 금액</span>
+                    <span className="text-blue-600">
+                      {order.orderAmount.toLocaleString()}원
+                    </span>
+                  </div>
                 </div>
               </div>
 

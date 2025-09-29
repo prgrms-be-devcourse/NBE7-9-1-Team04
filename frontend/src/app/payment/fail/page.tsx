@@ -13,7 +13,7 @@ export default function PaymentFailPage() {
       await refetch();
     }
     fetchData();
-  }, [refetch])
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
