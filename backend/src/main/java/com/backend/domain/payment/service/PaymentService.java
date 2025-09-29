@@ -34,16 +34,16 @@ public class PaymentService {
         Orders orders = orderRepository.findByOrderIdAndUser_UserId(request.orderId(), currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
 
-        if(orders.getOrderAmount() != request.paymentAmount()){
+        if (orders.getOrderAmount() != request.paymentAmount()) {
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
-        if(request.paymentMethod() == null || request.paymentMethod() != PaymentMethod.CARD) {
+        if (request.paymentMethod() == null || request.paymentMethod() != PaymentMethod.CARD) {
             throw new BusinessException(ErrorCode.INVALID_PAYMENT_METHOD);
         }
 
         boolean completePayment = paymentRepository.existsByOrdersAndPaymentStatus(orders, PaymentStatus.COMPLETED);
-        if(completePayment) {
+        if (completePayment) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
@@ -52,12 +52,18 @@ public class PaymentService {
 
     // 결제 단건 조회
     public PaymentInquiryResponse getPayment(Long paymentId, UserDto currentUser) {
-        if(paymentId == null || paymentId <= 0) {
+        if (paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
 
-        Payment payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+        Payment payment;
+        if (currentUser.level() == 0) { // 관리자는 전체 조회 허용
+            payment = paymentRepository.findById(paymentId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+        } else {
+            payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
+        }
 
         return new PaymentInquiryResponse(payment);
     }
@@ -65,18 +71,18 @@ public class PaymentService {
     // 결제 단건 취소 - controller
     @Transactional
     public PaymentCancelResponse cancelPayment(@Valid Long paymentId, UserDto currentUser) {
-        if(paymentId == null || paymentId <= 0) {
+        if (paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
 
         Payment payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
-        if(payment.getPaymentStatus() == PaymentStatus.CANCELED) {
+        if (payment.getPaymentStatus() == PaymentStatus.CANCELED) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELLED);
         }
 
-        if(payment.getPaymentStatus() != PaymentStatus.COMPLETED) {
+        if (payment.getPaymentStatus() != PaymentStatus.COMPLETED) {
             throw new BusinessException(ErrorCode.PAYMENT_NOT_CANCELLABLE);
         }
 
@@ -100,18 +106,18 @@ public class PaymentService {
     // 취소된 결제 내역 삭제 - controller
     @Transactional
     public void deletePayment(@Valid Long paymentId, UserDto currentUser) {
-        if(paymentId == null || paymentId <= 0) {
+        if (paymentId == null || paymentId <= 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND_PAYMENT);
         }
 
         Payment payment = paymentRepository.findByPaymentIdAndOrders_User_UserId(paymentId, currentUser.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_PAYMENT));
 
-        if(payment.getPaymentStatus() != PaymentStatus.CANCELED) {
+        if (payment.getPaymentStatus() != PaymentStatus.CANCELED) {
             throw new BusinessException(ErrorCode.PAYMENT_DELETE_FAILED);
         }
 
-        if(payment.getOrders() != null) {
+        if (payment.getOrders() != null) {
             payment.getOrders().setPayment(null);
         }
 

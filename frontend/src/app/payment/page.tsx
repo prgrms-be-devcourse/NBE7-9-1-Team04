@@ -71,6 +71,8 @@ export default function CheckoutPage() {
     setSelectedId(Number(e.target.value))
   }
 
+
+
   // 주문 생성
   const handleOrder = async () => {
     if (selectedId === null) {
@@ -83,6 +85,10 @@ export default function CheckoutPage() {
     }
 
     try {
+      // 배송비 계산
+      const shippingFee = cart.grandTotal < 50000 ? 3000 : 0
+      const totalAmount = cart.grandTotal + shippingFee
+
       // cartItems → items 변환
       const items = cart.cartItems.map((c) => ({
         productId: c.menuId,       // ✅ DTO에서 요구하는 필드
@@ -95,9 +101,9 @@ export default function CheckoutPage() {
       const orderRes = await fetchApi("/api/orders", {
         method: "POST",
         body: JSON.stringify({
-          amount: cart.grandTotal, // ✅ 총 결제 금액
-          addressId: selectedId,   // ✅ 배송지 ID
-          items,                   // ✅ 주문 상세
+          amount: totalAmount,   // ✅ 배송비 포함 금액
+          addressId: selectedId,
+          items,
         }),
       })
 
@@ -108,7 +114,7 @@ export default function CheckoutPage() {
         method: "POST",
         body: JSON.stringify({
           orderId,
-          paymentAmount: cart.grandTotal,
+          paymentAmount: totalAmount, // ✅ 배송비 포함 금액
           paymentMethod: "CARD",
         }),
       })
@@ -194,14 +200,14 @@ export default function CheckoutPage() {
             {/* 합계 */}
             <div className="border-t pt-3 flex justify-between font-bold">
               <span>총 결제 금액</span>
-              <span>{cart?.grandTotal}원</span>
+              <span>{(cart?.grandTotal ?? 0) + (cart && cart.grandTotal < 50000 ? 3000 : 0)}원</span>
             </div>
 
             <button
               onClick={handleOrder}
               className="w-full py-3 mt-4 rounded bg-black text-white font-semibold hover:bg-gray-800"
             >
-              {cart?.grandTotal}원 결제하기
+              {(cart?.grandTotal ?? 0) + (cart && cart.grandTotal < 50000 ? 3000 : 0)}원 결제하기
             </button>
           </div>
         </div>
