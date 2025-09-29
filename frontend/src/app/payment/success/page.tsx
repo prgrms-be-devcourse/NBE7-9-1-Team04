@@ -1,10 +1,10 @@
 "use client"
 
-import { useAuth } from "@/context/AuthContext"; 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/client"
 import Link from "next/link"
+import AuthGuard from "@/components/auth/AuthGuard";
 
 // 백엔드 API 응답 타입 정의
 interface OrderSummaryDetailResponse {
@@ -24,47 +24,56 @@ interface OrderSummaryResponse {
   items: OrderSummaryDetailResponse[]
 }
 
-interface ApiResponse<T> {
-  code: string
-  message: string
-  data: T
+// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
+export default function PaymentPage() {
+  return (
+    <AuthGuard>
+      <OrderSuccessPage />
+    </AuthGuard>
+  );
 }
 
-export default function OrderSuccessPage() {
-  const { refetch } = useAuth();
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const orderId = searchParams.get('orderId')
+function OrderSuccessPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
   
-  const [order, setOrder] = useState<OrderSummaryResponse | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [order, setOrder] = useState<OrderSummaryResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    async function updateAndLoadOrder() {
+    if (hasLoadedRef.current || !orderId) {
+      if (!orderId) {
+        router.push('/payment/fail');
+      }
+      return;
+    }
+
+    hasLoadedRef.current = true;
+
+    async function loadOrder() {
       try {
-        setLoading(true)
+        setLoading(true);
         
-        await refetch();
-  
-        const res = await fetchApi(`/api/orders/${orderId}`, { method: "GET" })
-        setOrder(res.data)
+        const res = await fetchApi(`/api/orders/${orderId}`, { method: "GET" });
+        
+        if (res.data) {
+          setOrder(res.data);
+        } else {
+          throw new Error('주문 정보가 없습니다');
+        }
       } catch (err) {
-        console.error("주문 처리 실패:", err)
-        // 에러 발생 시 실패 페이지로 리다이렉트
-        router.push(`/order/failed?orderId=${orderId}`)
+        console.error('주문 조회 실패:', err);
+        router.push(`/payment/fail?orderId=${orderId}`);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  
-    if (orderId) {
-      updateAndLoadOrder()
-    } else {
-      // orderId가 없는 경우도 실패 페이지로
-      router.push('/order/failed')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId]) // orderId만 의존성으로 유지
+
+    loadOrder();
+  }, [orderId, router]);
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {

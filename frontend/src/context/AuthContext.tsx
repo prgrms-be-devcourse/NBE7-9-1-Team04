@@ -2,12 +2,11 @@
 "use client";
 
 import { fetchApi } from "@/lib/client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef, useMemo } from "react";
 
-// 사용자 정보 타입 정의 (email 필드 사용)
 type User = {
   userId: number;
-  email: string; // username 대신 email 사용
+  email: string;
   level: number;
 };
 
@@ -15,7 +14,8 @@ type AuthContextType = {
   user: User | null;
   cartCount: number;
   isLoading: boolean;
-  refetch: () => void;
+  refetch: () => Promise<void>;
+  updateCartCount: (count: number) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,32 +24,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // 중복 호출 방지를 위한 ref
+  const fetchingRef = useRef(false);
 
-  const fetchAuthStatus = async () => {
-    setIsLoading(true); // 로딩 시작
+  // useCallback으로 메모이제이션하여 함수 재생성 방지
+  const fetchAuthStatus = useCallback(async () => {
+    // 이미 fetching 중이면 중단
+    if (fetchingRef.current) {
+      console.log('[AuthContext] 이미 fetching 중, 스킵');
+      return;
+    }
+
+    fetchingRef.current = true;
+    setIsLoading(true);
+    
     try {
       const userRes = await fetchApi("/api/users/my", { method: "GET" });
       if (userRes.data) {
-        setUser(userRes.data);
+        setUser(userRes.data);        
+        // 장바구니 조회
         const cartRes = await fetchApi("/api/carts", { method: "GET" });
         setCartCount(cartRes.data.cartItems.length || 0);
+      } else {
+        setUser(null);
+        setCartCount(0);
       }
     } catch (error) {
       setUser(null);
       setCartCount(0);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
+      fetchingRef.current = false;
     }
-  };
+  }, []); // 의존성 없음 - 항상 동일한 함수 참조 유지
 
-  useEffect(() => {
-    fetchAuthStatus();
+  const updateCartCount = useCallback((count: number) => {
+    setCartCount(count);
   }, []);
 
-  const value = { user, cartCount, isLoading, refetch: fetchAuthStatus };
+  // 초기 마운트 시에만 실행
+  useEffect(() => {
+    fetchAuthStatus();
+  }, [fetchAuthStatus]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  const value = useMemo(
+      () => ({ user, cartCount, isLoading, refetch: fetchAuthStatus, updateCartCount }),
+      [user, cartCount, isLoading, fetchAuthStatus, updateCartCount]
+    );
+    
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  }
 
 export function useAuth() {
   const context = useContext(AuthContext);

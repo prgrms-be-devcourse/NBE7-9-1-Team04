@@ -2,11 +2,10 @@
 
 import { useAuth } from "@/context/AuthContext"; 
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import AuthGuard from "@/components/auth/AuthGuard";
 
-// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
-export default function CartPage() {
+export default function PaymentPage() {
   return (
     <AuthGuard>
       <PaymentFailPage />
@@ -15,21 +14,27 @@ export default function CartPage() {
 }
 
 function PaymentFailPage() {
-  const { refetch } = useAuth();
-  const router = useRouter()
+  const { updateCartCount } = useAuth(); // ✅ cartCount 제거
+  const router = useRouter();
+  const hasUpdatedRef = useRef(false);
 
+  // ✅ 디버깅용 useEffect 삭제
+  
   useEffect(() => {
-    async function fetchData() {
-      await refetch();
+    if (hasUpdatedRef.current) {
+      return;
     }
-    fetchData();
-  }, [])
+
+    hasUpdatedRef.current = true;
+    updateCartCount(0);
+  }, [updateCartCount]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-2xl mx-auto py-10 px-6">
         <div className="text-center">
-          {/* 실패 아이콘 */}
+          {/* ✅ 노란색 디버깅 박스 삭제 */}
+          
           <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -41,7 +46,6 @@ function PaymentFailPage() {
             결제 처리 중 문제가 발생했습니다. 다시 시도해 주세요.
           </p>
 
-          {/* 실패 안내 정보 */}
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
             <h3 className="font-semibold mb-2 text-red-800">결제 실패 안내</h3>
             <ul className="text-sm text-red-700 space-y-1 text-left">
@@ -52,7 +56,6 @@ function PaymentFailPage() {
             </ul>
           </div>
 
-          {/* 버튼 그룹 */}
           <div className="flex gap-4 justify-center">
             <button 
               onClick={() => router.push('/menu')}
@@ -67,5 +70,5 @@ function PaymentFailPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

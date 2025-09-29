@@ -264,7 +264,11 @@ public class OrderService {
                 order.getCreateDate(),
                 order.getOrderAmount(),
                 order.getOrderStatus().name(),
-                order.getAddress() != null ? order.getAddress().getAddressDetail() : null,
+                order.getAddress() != null
+                        ? "(" + order.getAddress().getPostNumber() + ") " +
+                        order.getAddress().getAddress() + " " +
+                        order.getAddress().getAddressDetail()
+                        : null,
                 order.getPayment() != null ? order.getPayment().getPaymentId() : null,
                 items
         );
