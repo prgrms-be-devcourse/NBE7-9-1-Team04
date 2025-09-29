@@ -110,7 +110,7 @@ export default function ProfilePage() {
               <>
                 <button
                   onClick={handleSave}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="bg-black text-white px-4 py-2 rounded hover:bg-blue-800"
                 >
                   수정하기
                 </button>
@@ -125,18 +125,15 @@ export default function ProfilePage() {
               <>
               <button
                 onClick={handleEditToggle}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                className="bg-black text-white px-4 py-2 rounded hover:bg-blue-800 "
               >
                 내 정보 수정
               </button>
               <Link href="/user/address/list"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              className="bg-black text-white px-4 py-2 rounded hover:bg-green-800">
               주소 목록
               </Link>
-            
             </>
-
-               
             )}
           </div>
         </div>

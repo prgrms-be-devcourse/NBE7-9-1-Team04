@@ -181,11 +181,11 @@ export default function AddressListPage() {
         )}
       <div className=" flex mt-4">
         <Link href="/user/address/add"
-          className="bg-black text-white px-4 py-2 rounded m-2">
+          className="bg-black text-white px-4 py-2 rounded m-2 hover:bg-green-800">
           주소 추가
         </Link>
         <Link href="/payment"
-          className="bg-black text-white px-4 py-2 rounded m-2">
+          className="bg-black text-white px-4 py-2 rounded m-2 hover:bg-blue-800">
           결제하러 가기
         </Link>
       </div>
