@@ -135,7 +135,7 @@ export default function AddressListPage() {
                    <button
                      onClick={() => handleSave(addr.addressId)}
                      disabled={!formData.address || !formData.addressDetail || !formData.postNumber}
-                     className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded disabled:bg-gray-400"
+                     className="flex-1 bg-black hover:bg-green-600 text-white py-2 rounded disabled:bg-gray-400"
                    >
                      주소 수정하기
                    </button>
@@ -161,7 +161,7 @@ export default function AddressListPage() {
                        postNumber: addr.postNumber,
                      });
                    }}
-                   className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+                   className="flex-1  bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
                  >
                    주소 수정
                  </button>
