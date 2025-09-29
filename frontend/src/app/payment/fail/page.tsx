@@ -3,8 +3,18 @@
 import { useAuth } from "@/context/AuthContext"; 
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import AuthGuard from "@/components/auth/AuthGuard";
 
-export default function PaymentFailPage() {
+// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
+export default function CartPage() {
+  return (
+    <AuthGuard>
+      <PaymentFailPage />
+    </AuthGuard>
+  );
+}
+
+function PaymentFailPage() {
   const { refetch } = useAuth();
   const router = useRouter()
 

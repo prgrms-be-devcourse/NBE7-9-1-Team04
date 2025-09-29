@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { fetchApi } from "@/lib/client"
 import Link from "next/link"
+import AuthGuard from "@/components/auth/AuthGuard";
 
 type Address = {
   addressId: number
@@ -36,7 +37,16 @@ type CartResponse = {
   grandTotal: number
 }
 
-export default function CheckoutPage() {
+// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
+export default function CartPage() {
+  return (
+    <AuthGuard>
+      <CheckoutPage />
+    </AuthGuard>
+  );
+}
+
+function CheckoutPage() {
   const router = useRouter()
 
   const [addresses, setAddresses] = useState<Address[]>([])
