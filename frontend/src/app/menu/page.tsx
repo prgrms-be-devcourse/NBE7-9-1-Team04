@@ -6,7 +6,7 @@ import { fetchApi } from "@/lib/client";
 import { useAuth } from "@/context/AuthContext";
 import { Menu } from "@/types/menu";
 
-import { MenuCard } from "@/components/menu-card";
+import { MenuCard } from "@/components/MenuCard";
 import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function MenuPage() {
