@@ -29,7 +29,15 @@ export function Header() {
       </Link>
       <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
         <Link href="/menu" className="hover:text-primary">홈</Link>
-        <Link href="/orders" className="hover:text-primary">주문내역</Link>
+        {/*관리자, 사용자 로그인에 따른 주문내역 분류 */}
+        {user && (
+          <Link
+            href={user.level === 0 ? "/orders/admin" : "/orders"}
+            className="hover:text-primary"
+          >
+            주문내역
+          </Link>
+        )}
         {/* 관리자 전용 메뉴 */}
         {user?.level === 0 && (
           <Link href="/admin" className="hover:text-primary">관리자 대시보드</Link>
