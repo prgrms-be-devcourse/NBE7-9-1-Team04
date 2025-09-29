@@ -12,32 +12,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [showLogoutModal, setShowLogoutModal] = useState(false)
-
-// 페이지 로딩 시 쿠키 확인
-useEffect(() => {
-  const res = fetchApi("/api/users/my", {
-    credentials: "include", // 쿠키 전달
-  });
-  if (res.data) {
-    setShowLogoutModal(true)
-  }
-}, [])
-
-const handleLogout = async () => {
-  try {
-    await fetchApi("/users/logout", { method: "PUT" })
-    setShowLogoutModal(false)
-    alert("로그아웃 되었습니다.")
-  } catch (err: any) {
-    alert("로그아웃 실패: " + err.message)
-  }
-}
-
-const handleCancelLogout = () => {
-  setShowLogoutModal(false)
-}
- 
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -66,28 +41,7 @@ const handleCancelLogout = () => {
 
   return (
     <>
-{/* 로그아웃 모달 */}
-    {showLogoutModal && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 z-10">
-          <div className="bg-white p-6 rounded shadow-md w-full max-w-sm space-y-4">
-            <p className="text-black text-center">로그인이 되어 있습니다. 로그아웃 하시겠습니까?</p>
-            <div className="flex justify-center gap-4">
-              <button
-                className="bg-black text-white py-2 px-4 rounded"
-                onClick={handleLogout}
-              >
-                확인
-              </button>
-              <button
-                className="bg-gray-300 text-black py-2 px-4 rounded"
-                onClick={handleCancelLogout}
-              >
-                취소
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form
         onSubmit={handleSubmit}

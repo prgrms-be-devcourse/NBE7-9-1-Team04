@@ -78,17 +78,18 @@ export default function AddressListPage() {
     }
   };
 
+  
+
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center p-6">
       <h2 className="text-2xl font-bold mb-6">주소 목록</h2>
       {addresses ? (
          <div className="w-full max-w-md space-y-4">
          {addresses.map((addr) => (
-           <div key={addr.addressId} className="bg-gray-50 shadow-md p-4 rounded-lg">
-             <p><strong>주소:</strong> {addr.address}</p>
-             <p><strong>상세주소:</strong> {addr.addressDetail}</p>
-             <p><strong>우편번호:</strong> {addr.postNumber}</p>
- 
+          <div key={addr.addressId} className="bg-gray-50 shadow-md p-4 rounded-lg">
+            <p><strong>주소:</strong> {addr.address}</p>
+            <p><strong>상세주소:</strong> {addr.addressDetail}</p>
+            <p><strong>우편번호:</strong> {addr.postNumber}</p>
              {editingId === addr.addressId ? (
                <div className="mt-4 space-y-2">
                  {/* 주소 입력 */}
