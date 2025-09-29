@@ -24,7 +24,8 @@ File -> Settings -> Build, Excution, Deployment -> Compiler -> Annotation Proces
 <br/>
 
 # 실행 방법
-
+## 시연 영상
+[![Video Label](http://img.youtube.com/vi/NGMVwdaf0Bc/0.jpg)](https://youtu.be/NGMVwdaf0Bc)
 <br/>
 
 # 개발 가이드
