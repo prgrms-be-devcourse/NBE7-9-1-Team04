@@ -13,11 +13,11 @@ export default function CreateMenuForm({
   onSave: (menu: Menu) => void;
 }) {
   const [form, setForm] = useState<Menu>({
-    name: "",
-    price: 0,
+    name: "새로운 메뉴",
+    price: 20000,
     isSoldOut: false,
-    description: "",
-    imageUrl: "",
+    description: "부드러운 바디감과 고소한 견과류 향의 대표적인 원두",
+    imageUrl: "https://i.postimg.cc/JGY04s7v/colombia.jpg",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,10 +68,12 @@ export default function CreateMenuForm({
 
         {/* 품절 여부 토글 */}
         <ToggleSwitch
-          checked={form.isSoldOut}
+          checked={!form.isSoldOut} // 판매중일 때 ON
           onChange={() => setForm((prev) => ({ ...prev, isSoldOut: !prev.isSoldOut }))}
-          onLabel="품절"
-          offLabel="판매중"
+          onLabel="판매중"
+          offLabel="품절"
+          onColor="bg-green-500"
+          offColor="bg-gray-300"
         />
       </div>
 

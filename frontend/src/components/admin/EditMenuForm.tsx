@@ -64,10 +64,12 @@ export default function EditMenuForm({
 
         {/* 품절 여부 토글 */}
         <ToggleSwitch
-          checked={form.isSoldOut}
+          checked={!form.isSoldOut} // 판매중일 때 ON
           onChange={() => setForm((prev) => ({ ...prev, isSoldOut: !prev.isSoldOut }))}
-          onLabel="품절"
-          offLabel="판매중"
+          onLabel="판매중"
+          offLabel="품절"
+          onColor="bg-green-500"
+          offColor="bg-gray-300"
         />
       </div>
 
