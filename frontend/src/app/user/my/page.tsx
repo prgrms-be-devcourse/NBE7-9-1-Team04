@@ -69,14 +69,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col">
-      {/* 헤더 */}
-      <header className="flex items-center justify-between p-4 border-b border-gray-300 relative">
-        <button className="text-2xl">☰</button>
-        <Link href="/" className="text-xl font-bold">
-          Home
-        </Link>
-        <div className="w-6"></div>
-      </header>
 
       {/* 프로필 카드 */}
       <main className="flex flex-col items-center justify-center flex-1 p-6">
@@ -130,12 +122,21 @@ export default function ProfilePage() {
                 </button>
               </>
             ) : (
+              <>
               <button
                 onClick={handleEditToggle}
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
                 내 정보 수정
               </button>
+              <Link href="/user/address/list"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              주소 목록
+              </Link>
+            
+            </>
+
+               
             )}
           </div>
         </div>

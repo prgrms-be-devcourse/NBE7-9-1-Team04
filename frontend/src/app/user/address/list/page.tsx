@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
+import Link from "next/link";
 export default function AddressListPage() {
   const [addresses, setAddresses] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -84,97 +84,110 @@ export default function AddressListPage() {
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center p-6">
       <h2 className="text-2xl font-bold mb-6">주소 목록</h2>
-
-      <div className="w-full max-w-md space-y-4">
-        {addresses.map((addr) => (
-          <div key={addr.addressId} className="bg-gray-50 shadow-md p-4 rounded-lg">
-            <p><strong>주소:</strong> {addr.address}</p>
-            <p><strong>상세주소:</strong> {addr.addressDetail}</p>
-            <p><strong>우편번호:</strong> {addr.postNumber}</p>
-
-            {editingId === addr.addressId ? (
-              <div className="mt-4 space-y-2">
-                {/* 주소 입력 */}
-                <input
-                  type="text"
-                  value={formData.address}
-                  readOnly
-                  placeholder="주소"
-                  className="w-full border rounded p-2 bg-gray-100"
-                />
-
-                {/* 상세주소 입력 */}
-                <input
-                  type="text"
-                  value={formData.addressDetail}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, addressDetail: e.target.value }))}
-                  placeholder="상세 주소"
-                  className="w-full border rounded p-2"
-                />
-
-                {/* 우편번호 입력 + 찾기 버튼 */}
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={formData.postNumber}
-                    readOnly
-                    placeholder="우편번호"
-                    className="border rounded p-2 flex-1 bg-gray-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={handlePostSearch}
-                    className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    우편번호 찾기
-                  </button>
-                </div>
-
-                {/* 액션 버튼 */}
-                <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={() => handleSave(addr.addressId)}
-                    disabled={!formData.address || !formData.addressDetail || !formData.postNumber}
-                    className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded disabled:bg-gray-400"
-                  >
-                    주소 수정하기
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingId(null);
-                      setFormData({ address: "", addressDetail: "", postNumber: "" });
-                    }}
-                    className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
-                  >
-                    취소
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => {
-                    setEditingId(addr.addressId);
-                    setFormData({
-                      address: addr.address,
-                      addressDetail: addr.addressDetail,
-                      postNumber: addr.postNumber,
-                    });
-                  }}
-                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
-                >
-                  주소 수정
-                </button>
-                <button
-                  onClick={() => handleDelete(addr.addressId)}
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded"
-                >
-                  주소 삭제
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+      {addresses ? (
+         <div className="w-full max-w-md space-y-4">
+         {addresses.map((addr) => (
+           <div key={addr.addressId} className="bg-gray-50 shadow-md p-4 rounded-lg">
+             <p><strong>주소:</strong> {addr.address}</p>
+             <p><strong>상세주소:</strong> {addr.addressDetail}</p>
+             <p><strong>우편번호:</strong> {addr.postNumber}</p>
+ 
+             {editingId === addr.addressId ? (
+               <div className="mt-4 space-y-2">
+                 {/* 주소 입력 */}
+                 <input
+                   type="text"
+                   value={formData.address}
+                   readOnly
+                   placeholder="주소"
+                   className="w-full border rounded p-2 bg-gray-100"
+                 />
+ 
+                 {/* 상세주소 입력 */}
+                 <input
+                   type="text"
+                   value={formData.addressDetail}
+                   onChange={(e) => setFormData((prev) => ({ ...prev, addressDetail: e.target.value }))}
+                   placeholder="상세 주소"
+                   className="w-full border rounded p-2"
+                 />
+ 
+                 {/* 우편번호 입력 + 찾기 버튼 */}
+                 <div className="flex gap-2">
+                   <input
+                     type="text"
+                     value={formData.postNumber}
+                     readOnly
+                     placeholder="우편번호"
+                     className="border rounded p-2 flex-1 bg-gray-100"
+                   />
+                   <button
+                     type="button"
+                     onClick={handlePostSearch}
+                     className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                   >
+                     우편번호 찾기
+                   </button>
+                 </div>
+ 
+                 {/* 액션 버튼 */}
+                 <div className="flex gap-2 mt-2">
+                   <button
+                     onClick={() => handleSave(addr.addressId)}
+                     disabled={!formData.address || !formData.addressDetail || !formData.postNumber}
+                     className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded disabled:bg-gray-400"
+                   >
+                     주소 수정하기
+                   </button>
+                   <button
+                     onClick={() => {
+                       setEditingId(null);
+                       setFormData({ address: "", addressDetail: "", postNumber: "" });
+                     }}
+                     className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
+                   >
+                     취소
+                   </button>
+                 </div>
+               </div>
+             ) : (
+               <div className="flex gap-2 mt-4">
+                 <button
+                   onClick={() => {
+                     setEditingId(addr.addressId);
+                     setFormData({
+                       address: addr.address,
+                       addressDetail: addr.addressDetail,
+                       postNumber: addr.postNumber,
+                     });
+                   }}
+                   className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+                 >
+                   주소 수정
+                 </button>
+                 <button
+                   onClick={() => handleDelete(addr.addressId)}
+                   className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded"
+                 >
+                   주소 삭제
+                 </button>
+               </div>
+             )}
+           </div>
+         ))}
+       </div>
+        ) : (
+          <h2 className="text-2xl font-bold mb-6">주소가 없습니다. 추가해주세요</h2>
+        )}
+      <div className=" flex mt-4">
+        <Link href="/user/address/add"
+          className="bg-black text-white px-4 py-2 rounded m-2">
+          주소 추가
+        </Link>
+        <Link href="/payment"
+          className="bg-black text-white px-4 py-2 rounded m-2">
+          결제하러 가기
+        </Link>
       </div>
     </div>
   );

@@ -63,15 +63,6 @@ export default function SignupPage() {
 
   return (
     <>
-    {/* 헤더 */}
-    <header className="flex items-center justify-between p-4 border-b border-gray-300 relative">
-        <button className="text-2xl">☰</button>
-        <Link href="/" className="text-xl font-bold">
-          Home
-        </Link>
-        <div className="w-6"></div>
-      </header>
-
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-black">
         
       <div className=" shadow-md p-8 rounded-lg w-full max-w-md space-y-4">

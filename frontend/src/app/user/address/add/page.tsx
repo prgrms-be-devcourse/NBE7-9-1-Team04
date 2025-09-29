@@ -67,13 +67,7 @@ export default function AddressPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center p-6 text-black">
-      {/* 헤더 */}
-      <header className="flex items-center justify-between w-full max-w-md mb-6">
-        <Link href="/" className="text-xl font-bold">
-          Home
-        </Link>
-        <div className="w-6"></div>
-      </header>
+  
 
       {/* 카드 */}
       <div className="bg-gray-50 shadow-md p-8 rounded-lg w-full max-w-md space-y-4">
