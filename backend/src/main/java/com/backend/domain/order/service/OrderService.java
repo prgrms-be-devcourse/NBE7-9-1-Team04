@@ -75,6 +75,10 @@ public class OrderService {
         }
 
         // 4. 금액 검증
+        if(calculatedTotal < 50000){
+            calculatedTotal += 3000; // 배송비 추가
+        }
+
         if (calculatedTotal != request.amount()) {
             throw new BusinessException(ErrorCode.INVALID_ORDER_AMOUNT);
         }
@@ -135,8 +139,9 @@ public class OrderService {
         // 1. 주문 목록 조회
         List<Orders> orders = orderRepository.findByUser_UserId(userId);
 
+        // 주문 없을 때는 그냥 빈 리스트 반환 (예외 X)
         if (orders.isEmpty()) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ORDER);
+            return List.of();
         }
 
         return orders.stream()
@@ -234,8 +239,10 @@ public class OrderService {
 
     public OrderSummaryResponse getOrderByUserId(Long actor, Long orderId) {
         // 1. 주문 존재 확인
-        Orders order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ORDER));
+        Orders order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return null; // 예외 던지지 않고 null 반환
+        }
 
         // 2. 주문이 해당 유저의 것인지 확인
         if (!order.getUser().getUserId().equals(actor)) {

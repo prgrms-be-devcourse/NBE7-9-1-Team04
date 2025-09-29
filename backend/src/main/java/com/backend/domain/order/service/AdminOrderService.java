@@ -26,9 +26,9 @@ public class AdminOrderService {
     public List<AdminOrderSummaryResponse> getAllOrdersForAdmin() {
         List<Orders> orders = orderRepository.findAll();
 
-        // 1. 주문이 없을 경우 예외 처리
+        // 주문이 없을 경우 → 그냥 빈 리스트 반환
         if (orders.isEmpty()) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ORDER);
+            return List.of();
         }
 
         return orders.stream()
@@ -45,10 +45,8 @@ public class AdminOrderService {
                             order.getOrderStatus().name(),
                             order.getUser().getEmail(),
                             order.getUser().getPhoneNumber(),
-                            addressDto != null
-                                    ? addressDto.address() + " " + addressDto.addressDetail()
-                                    : null,
-                            order.getPayment().getPaymentId(),
+                            addressDto != null ? addressDto.address() + " " + addressDto.addressDetail() : null,
+                            order.getPayment() != null ? order.getPayment().getPaymentId() : null,
                             order.getOrderDetails().stream()
                                     .map(detail -> new OrderSummaryDetailResponse(
                                             detail.getMenu().getName(),
