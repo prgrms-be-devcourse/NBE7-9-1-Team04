@@ -35,12 +35,12 @@ export default function AdminMenuCard({
             <div className="flex gap-4 items-center">
                 {/* 품절 토글 */}
                 <ToggleSwitch
-                    checked={menu.isSoldOut} // true면 품절, false면 재고있음
+                    checked={!menu.isSoldOut} // 판매중일 때 ON
                     onChange={() => onToggleSoldOut(menu.menuId!, menu.isSoldOut)}
-                    onLabel="품절"
-                    offLabel="재고있음"
-                    onColor="bg-gray-300" // 품절일 때 (isSoldOut=true → 회색)
-                    offColor="bg-green-500" // 재고있을 때 (isSoldOut=false → 초록)
+                    onLabel="판매중"
+                    offLabel="품절"
+                    onColor="bg-green-500"
+                    offColor="bg-gray-300"
                 />
 
 

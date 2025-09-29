@@ -20,9 +20,8 @@ export function MenuCard({
         <img
           src={menu.imageUrl}
           alt={menu.name}
-          className={`w-full h-56 object-cover ${
-            menu.isSoldOut ? "opacity-50" : ""
-          }`}
+          className={`w-full h-56 object-cover ${menu.isSoldOut ? "opacity-50" : ""
+            }`}
         />
         {menu.isSoldOut && (
           <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -45,18 +44,17 @@ export function MenuCard({
       {/* 버튼 */}
       {onClick && (
         <button
-          disabled={disabled}
+          disabled={disabled || menu.isSoldOut} // 품절이면 버튼 비활성화
           onClick={() => {
             console.log("👉 버튼 클릭됨:", menu.menuId);
             onClick?.();
           }}
-          className={`w-full py-3 font-medium ${
-            disabled
+          className={`w-full py-3 font-medium ${disabled || menu.isSoldOut
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
               : "bg-black text-white hover:bg-gray-800"
-          }`}
+            }`}
         >
-          {buttonLabel || "확인"}
+          {menu.isSoldOut ? "품절" : buttonLabel || "확인"}
         </button>
       )}
     </div>
