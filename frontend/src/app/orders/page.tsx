@@ -125,7 +125,11 @@ export default function OrdersPage() {
                   <span
                     className={`text-sm border px-2 py-0.5 rounded ${order.status === "CANCELED"
                       ? "text-red-600 border-red-600"
-                      : "text-green-600 border-green-600"
+                      : order.status === "CREATED"
+                        ? "text-red-600 border-red-600"
+                        : order.status === "COMPLETED"
+                          ? "text-gray-600 border-gray-400"
+                          : "text-green-600 border-green-600"
                       }`}
                   >
                     {getStatusText(order.status)}
@@ -171,11 +175,20 @@ export default function OrdersPage() {
 
                 {/* 버튼 영역 */}
                 <div className="flex gap-2 mt-4">
-                  <Link href={`/payment/${order.paymentId}`} className="flex-1">
-                    <button className="w-full border rounded py-2 text-sm bg-blue-50 hover:bg-blue-100 text-center">
-                      결제확인
+                  {order.paymentId ? (
+                    <Link href={`/payment/${order.paymentId}`} className="flex-1">
+                      <button className="w-full border rounded py-2 text-sm bg-blue-50 hover:bg-blue-100 text-center">
+                        결제확인
+                      </button>
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className="flex-1 w-full border rounded py-2 text-sm bg-gray-200 text-gray-400 cursor-not-allowed"
+                    >
+                      결제 내역 없음
                     </button>
-                  </Link>
+                  )}
 
                   {order.status === "CANCELED" ? (
                     <button
