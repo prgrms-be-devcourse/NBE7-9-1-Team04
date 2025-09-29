@@ -2,26 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { fetchApi } from "@/lib/client"
+import { OrderItem,AdminOrder } from "@/types/order"
 import Link from "next/link"
-
-type OrderItem = {
-  productName: string
-  quantity: number
-  orderPrice: number
-  imageUrl?: string
-}
-
-type AdminOrder = {
-  orderId: number
-  orderTime: string
-  orderAmount: number
-  status: string
-  userEmail: string
-  userPhone: string
-  address: string
-  paymentId?: number
-  items: OrderItem[]
-}
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([])
