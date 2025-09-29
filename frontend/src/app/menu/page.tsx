@@ -3,23 +3,25 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/client";
-import { useAuth } from "@/context/AuthContext"; // AuthContext 가져오기
+import { useAuth } from "@/context/AuthContext";
+import { Menu } from "@/types/menu";
 
-interface Menu {
-  menuId: number;
-  name: string;
-  price: number;
-  isSoldOut: boolean;
-  description: string;
-  imageUrl: string;
+import { MenuCard } from "@/components/menu-card";
+import AuthGuard from "@/components/auth/AuthGuard";
+
+export default function MenuPage() {
+  return (
+    <AuthGuard>
+      <MenuPageContent />
+    </AuthGuard>
+  );
 }
 
-export default function Home() {
+function MenuPageContent() {
   const [menus, setMenus] = useState<Menu[]>([]);
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
-
-  const { refetch } = useAuth(); // 전역 refetch 불러오기 (user, cartCount 갱신용)
+  const { refetch } = useAuth();
 
   // 메뉴 불러오기
   useEffect(() => {
@@ -41,9 +43,7 @@ export default function Home() {
         method: "POST",
         body: JSON.stringify({ menuId, quantity: 1 }),
       });
-
-      // 장바구니 리패치
-      await refetch();
+      await refetch(); // 장바구니 카운트 갱신
 
       // 토스트 보이기
       setShowToast(true);
@@ -62,57 +62,16 @@ export default function Home() {
       {/* 카드 리스트 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl w-full">
         {menus.map((menu) => (
-          <div
+          <MenuCard
             key={menu.menuId}
-            className="rounded-lg border shadow-sm overflow-hidden flex flex-col"
-          >
-            {/* 이미지 */}
-            <div className="relative">
-              <img
-                src={menu.imageUrl}
-                alt={menu.name}
-                className={`w-full h-56 object-cover ${
-                  menu.isSoldOut ? "opacity-50" : ""
-                }`}
-              />
-              {menu.isSoldOut && (
-                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                  품절
-                </span>
-              )}
-            </div>
-
-            {/* 내용 */}
-            <div className="p-4 flex flex-col gap-2 flex-grow">
-              <h3 className="text-black font-semibold">{menu.name}</h3>
-              <p
-                className="text-sm text-gray-400 truncate"
-                title={menu.description}
-              >
-                {menu.description}
-              </p>
-              <p className="text-black font-bold mt-auto">
-                {menu.price.toLocaleString()}원
-              </p>
-            </div>
-
-            {/* 버튼 */}
-            <button
-              disabled={menu.isSoldOut}
-              onClick={() => handleAddToCart(menu.menuId)}
-              className={`w-full py-3 font-medium ${
-                menu.isSoldOut
-                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-black text-white hover:bg-gray-800"
-              }`}
-            >
-              {menu.isSoldOut ? "품절" : "장바구니 담기"}
-            </button>
-          </div>
+            menu={menu}
+            onClick={() => handleAddToCart(menu.menuId!)}
+            buttonLabel="장바구니 담기"
+          />
         ))}
       </div>
 
-      {/* 토스트 (하단 고정) */}
+      {/* 토스트 */}
       {showToast && (
         <div className="fixed bottom-4 inset-x-0 flex justify-center">
           <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-4">
