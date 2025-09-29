@@ -1,9 +1,11 @@
 "use client"
 
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { fetchApi } from "@/lib/client"
 import Link from "next/link"
+import AuthGuard from "@/components/auth/AuthGuard";
 
 type Address = {
   addressId: number
@@ -34,14 +36,24 @@ type CartResponse = {
   grandTotal: number
 }
 
-export default function CheckoutPage() {
+// ✅ 변경점: AuthGuard 사용하여 로그인 상태 처리
+export default function CartPage() {
+  return (
+    <AuthGuard>
+      <CheckoutPage />
+    </AuthGuard>
+  );
+}
+
+function CheckoutPage() {
   const router = useRouter()
 
   const [addresses, setAddresses] = useState<Address[]>([])
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [cart, setCart] = useState<CartResponse | null>(null)
-
+  const { refetch } = useAuth();
+  
   // 초기 데이터 불러오기
   useEffect(() => {
     async function loadData() {
@@ -110,6 +122,7 @@ export default function CheckoutPage() {
       })
 
       router.push(`/payment/success?orderId=${orderId}`)
+      await refetch();
     } catch (err) {
       console.error("주문/결제 실패:", err)
       router.push(`/payment/fail`)
@@ -144,19 +157,19 @@ export default function CheckoutPage() {
             </div>
           ) : (
             <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
-              <h3 className="font-semibold mb-2 text-red-800">주소 등록 안내</h3>
-              <ul className="text-sm text-red-700 space-y-1 text-left">
-                <li>• 마이페이지에서 주소를 등록해 주세요</li>
-                <Link href="/user/address/add">
-                  <button className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    주소 등록하러 가기
-                  </button>
-                </Link>
-              </ul>
-            </div>
+            <h3 className="font-semibold mb-2 text-red-800">주소 등록 안내</h3>
+            <ul className="text-sm text-red-700 space-y-1 text-left">
+              <li>• 마이페이지에서 주소를 등록해 주세요</li>
+              <Link href="/user/address/add">
+                <button className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  주소 등록하러 가기
+                </button>
+              </Link>
+            </ul>
+          </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
