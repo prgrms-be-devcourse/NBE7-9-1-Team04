@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header"; 
 import { AuthProvider } from "@/context/AuthContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,11 +17,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body>
-        {/* 2. <AuthProvider>로 전체를 감싸줍니다. */}
+      <body className={inter.className}>
         <AuthProvider>
-          <Header />
-          <main>{children}</main>
+          <ToastProvider>
+            <Header />
+            <main>{children}</main>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>
