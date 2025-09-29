@@ -46,7 +46,10 @@ export function MenuCard({
       {onClick && (
         <button
           disabled={disabled}
-          onClick={onClick}
+          onClick={() => {
+            console.log("👉 버튼 클릭됨:", menu.menuId);
+            onClick?.();
+          }}
           className={`w-full py-3 font-medium ${
             disabled
               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
