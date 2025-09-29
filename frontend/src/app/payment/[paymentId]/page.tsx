@@ -36,6 +36,17 @@ export default function PaymentDetailPage() {
   if (loading) return <div className="p-6">결제 정보를 불러오는 중...</div>
   if (!payment) return <div className="p-6">결제 정보를 찾을 수 없습니다.</div>
 
+  // 상단에 status 변환 함수 추가
+  const getPaymentStatusText = (status: string) => {
+    const statusMap: Record<string, string> = {
+      PENDING: "결제 전",
+      COMPLETED: "결제 완료",
+      FAILED: "결제 실패",
+      CANCELED: "결제 취소"
+    }
+    return statusMap[status] || status
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4">
       <div className="bg-white border rounded-lg shadow-sm p-6 w-full max-w-2xl">
@@ -57,7 +68,7 @@ export default function PaymentDetailPage() {
                 : "text-red-600"
             }`}
           >
-            {payment.paymentStatus}
+            {getPaymentStatusText(payment.paymentStatus)}
           </p>
           <p>생성 일시</p>
           <p className="text-right">{new Date(payment.createDate).toLocaleString()}</p>

@@ -81,9 +81,19 @@ export default function OrdersPage() {
     }
   }
 
+  // status 변환 함수
+  const getStatusText = (status: string) => {
+    const statusMap: Record<string, string> = {
+      CREATED: "결제 실패",
+      PAID: "결제 완료",
+      COMPLETED: "배송 완료",
+      CANCELED: "주문 취소"
+    }
+    return statusMap[status] || status
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 헤더는 나중에 <Header /> 로 대체 */}
       <header />
 
       <main className="max-w-3xl mx-auto py-10 px-4">
@@ -118,7 +128,7 @@ export default function OrdersPage() {
                       : "text-green-600 border-green-600"
                       }`}
                   >
-                    {order.status}
+                    {getStatusText(order.status)}
                   </span>
                 </div>
 
