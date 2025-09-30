@@ -30,6 +30,11 @@
 
 <br />
 
+## ERD
+<img width="1530" height="1042" alt="A3O2 (9)" src="https://github.com/user-attachments/assets/1031ed4a-1835-4125-ad9c-8d619a93c915" />
+
+<br />
+
 ## 팀원 및 역할
 
 ### 기능별 담당 영역
