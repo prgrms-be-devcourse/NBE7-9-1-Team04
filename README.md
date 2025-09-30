@@ -41,11 +41,11 @@
 
 | 이름 | 역할 | 담당 영역 | GitHub | Wiki 문서 |
 |------|------|-----------|--------|--------|
-| **강휘윤** | Backend | 회원, 주소 도메인 | [Github](https://github.com/Creamcheesepie) | [회원 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%ED%9A%8C%EC%9B%90-%EB%8F%84%EB%A9%94%EC%9D%B8) |
-| **박종수** | Backend & Frontend | 주문 도메인, FE 공통 영역 | [Github](https://github.com/gandaraipower) | [주소 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EC%A3%BC%EC%86%8C-%EB%8F%84%EB%A9%94%EC%9D%B8) |
-| **오혜승** | Backend & PM | 결제 도메인, 일정 관리 및 기획 | [Github](https://github.com/Hyeseung-OH) | [주문 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EC%A3%BC%EB%AC%B8-%EB%8F%84%EB%A9%94%EC%9D%B8) |
-| **윤예지** | Backend | 장바구니 도메인, BE 공통 영역 | [Github](https://github.com/dpwl0974) | [결제 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EA%B2%B0%EC%A0%9C-%EB%8F%84%EB%A9%94%EC%9D%B8) |
-| **최병준** | Backend | 메뉴 도메인, 관리자 도메인 | [Github](https://github.com/larama-C) | [메뉴 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EB%A9%94%EB%89%B4-%EB%8F%84%EB%A9%94%EC%9D%B8) |
+| **강휘윤** | Backend & FE | 회원, 주소 도메인 | [Github](https://github.com/Creamcheesepie) | [회원 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%ED%9A%8C%EC%9B%90-%EB%8F%84%EB%A9%94%EC%9D%B8) |
+| **박종수** | Backend & FE | 주문 도메인, FE 공통 영역 | [Github](https://github.com/gandaraipower) | [주소 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EC%A3%BC%EC%86%8C-%EB%8F%84%EB%A9%94%EC%9D%B8) |
+| **오혜승** | Backend & FE & 팀장 | 결제 도메인, 일정 관리 및 기획 | [Github](https://github.com/Hyeseung-OH) | [주문 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EC%A3%BC%EB%AC%B8-%EB%8F%84%EB%A9%94%EC%9D%B8) |
+| **윤예지** | Backend & FE | 장바구니 도메인, BE 공통 영역 | [Github](https://github.com/dpwl0974) | [결제 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EA%B2%B0%EC%A0%9C-%EB%8F%84%EB%A9%94%EC%9D%B8) |
+| **최병준** | Backend & FE | 메뉴 도메인, 관리자 도메인 | [Github](https://github.com/larama-C) | [메뉴 도메인 위키 문서](https://github.com/prgrms-be-devcourse/NBE7-9-1-Team04/wiki/%EB%A9%94%EB%89%B4-%EB%8F%84%EB%A9%94%EC%9D%B8) |
 
 <br />
 
